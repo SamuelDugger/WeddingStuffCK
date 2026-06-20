@@ -1,4 +1,6 @@
-/* Injects shared navigation and footer, marks active link */
+// Builds and injects the shared nav and footer on every page,
+// highlights the current page link, and wires up the hamburger menu,
+// countdown timer, and Q&A accordion.
 (function () {
   const pages = [
     { href: 'index.html',         label: 'Home' },
@@ -48,14 +50,13 @@
   document.body.insertAdjacentHTML('afterbegin', navHTML);
   document.body.insertAdjacentHTML('beforeend', footerHTML);
 
-  // Hamburger toggle
   const toggler = document.getElementById('navToggler');
   const drawer  = document.getElementById('navDrawer');
   toggler && toggler.addEventListener('click', () => {
     drawer.classList.toggle('open');
   });
 
-  // Countdown
+  // Countdown — updates the "X Days To Go" text on the home page
   const countdownEl = document.getElementById('countdown');
   if (countdownEl) {
     const wedding = new Date('2027-02-27T00:00:00');
@@ -67,7 +68,7 @@
     setInterval(tick, 60000);
   }
 
-  // Q&A accordion
+  // Q&A accordion — opens/closes answers when a question is clicked
   document.querySelectorAll('.qa-question').forEach(btn => {
     btn.addEventListener('click', () => {
       const answer = btn.nextElementSibling;

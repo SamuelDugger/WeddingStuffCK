@@ -1,26 +1,18 @@
-/* ============================================================
-   WEDDING GUEST & EVENT CONFIGURATION
-   ============================================================
-   Edit this file to manage your guest list, events, and admin password.
-   - ADMIN_PASSWORD  : password to access admin.html
-   - WEDDING_EVENTS  : define which events guests can RSVP for
-   - GUEST_LIST      : one entry per invited party (individual or couple/family)
-                       Set `events` to the event IDs that party can see/RSVP for.
-                       Set `plusOne: true` if they may bring a guest.
-   ============================================================ */
+// This is the main settings file for the wedding website.
+// You'll update this file to manage your guest list, events, and passwords.
 
+// Password to log in to the admin page (admin.html)
 const ADMIN_PASSWORD = "C&K02272027";
 
-// Paste your Google Apps Script Web App URL here after deploying Code.gs.
-// Leave empty ('') to use localStorage only (local/testing mode).
+// Your Google Apps Script URL — this is what saves RSVPs to Google Sheets.
+// Leave this empty if you're just testing locally.
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbyp-GueG3Hx_3_Oykki_xngNpfFG2Z04yZeSjkrHBRIab9VI8YsLWUnKUlANr-Me3r2mw/exec";
 
-/* ---------- Events ----------
-   Add or remove events here. Each event needs a unique `id`.
-   `mealChoices` is optional — remove the array to hide the meal question.
-   `deadline` is shown to guests but not enforced.
-*/
+
+// Your events — each one guests can RSVP for.
+// Fill in the date, time, and location as those details are confirmed.
+// "mealChoices" controls what food options appear. Remove the options to hide the meal question entirely.
 const WEDDING_EVENTS = {
   wedding: {
     id: "wedding",
@@ -37,7 +29,7 @@ const WEDDING_EVENTS = {
     date: "Date TBD",
     time: "Time TBD",
     location: "Location TBD",
-    mealChoices: [], // empty array = no meal question
+    mealChoices: [],
     deadline: "TBD",
   },
   rehearsal: {
@@ -51,43 +43,37 @@ const WEDDING_EVENTS = {
   },
 };
 
-/* ---------- Guest List ----------
-   Each entry is one RSVP "party" (individual, couple, or family).
-   `name`     : Full name as it will appear on invitations (used for lookup).
-                For couples/families you can list all names: "John & Jane Smith"
-   `events`   : Array of event IDs this party is invited to.
-   `plusOne`  : (optional) true = they may bring +1; their plus-one's name is collected on submission.
-   `notes`    : (optional) Internal note visible only in the admin view.
 
-   TIP: names are matched case-insensitively, and guests can search by
-   first name, last name, or full name.
-*/
+// Your guest list — one line per person or household.
+//
+// Each guest needs:
+//   id     - a unique number (just count up from 1)
+//   name   - exactly how it appears on their invitation
+//   events - which events they're invited to (use the IDs from above)
+//
+// Optional:
+//   plusOne: true   - add this if they're allowed to bring a guest
+//   notes: "..."    - a private note only visible to you on the admin page
+//
+// Tip: guests search by first name, last name, or full name — spelling should match their invitation.
+
 const GUEST_LIST = [
-  // --- Wedding only ---
+  // Wedding only
   { id: 1, name: "John Smith", events: ["wedding"] },
   { id: 2, name: "Sarah Johnson", events: ["wedding"], plusOne: true },
   { id: 3, name: "Mike & Lisa Davis", events: ["wedding"] },
-  {
-    id: 4,
-    name: "The Williams Family",
-    events: ["wedding"],
-    notes: "Kids allowed",
-  },
+  { id: 4, name: "The Williams Family", events: ["wedding"], notes: "Kids allowed" },
 
-  // --- Wedding + Shower ---
+  // Wedding + Shower
   { id: 5, name: "Emily Clark", events: ["wedding", "shower"] },
   { id: 6, name: "Jessica Taylor", events: ["wedding", "shower"] },
   { id: 7, name: "Amanda White", events: ["wedding", "shower"] },
 
-  // --- Wedding + Rehearsal ---
+  // Wedding + Rehearsal
   { id: 8, name: "Robert Brown", events: ["wedding", "rehearsal"] },
   { id: 9, name: "Tom & Karen Wilson", events: ["wedding", "rehearsal"] },
 
-  // --- All three events ---
+  // All three events
   { id: 10, name: "Mary Anderson", events: ["wedding", "shower", "rehearsal"] },
-  {
-    id: 11,
-    name: "James Martinez",
-    events: ["wedding", "shower", "rehearsal"],
-  },
+  { id: 11, name: "James Martinez", events: ["wedding", "shower", "rehearsal"] },
 ];

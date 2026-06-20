@@ -37,8 +37,68 @@
         </p>
 
         <p class="hero-countdown" id="countdown">Loading…</p>
+      </section>
 
-        <div class="hero-divider"></div>
+      <!-- Photo carousel — replace each .slide-placeholder with an <img> tag when you have photos.
+           To add a slide: copy a <div class="ck-slide"> block and add it inside .ck-track. -->
+
+      <!-- class="ck-img focus-top" -->
+      <!-- very top of image -->
+      <!-- class="ck-img focus-upper-third" -->
+      <!-- 75% down -->
+      <!-- class="ck-img focus-lower-third" -->
+      <!-- 25% down -->
+      <!-- class="ck-img focus-bottom" -->
+      <!-- very bottom -->
+
+      <!-- or pixel-perfect with inline style -->
+      <!-- class="ck-img" style="object-position: 50% 40%" -->
+      <section class="carousel-section" id="photoCarousel">
+        <div class="ck-track">
+          <div class="ck-slide active">
+            <img
+              src="Images//Home/0556c7b4-f125-41f0-9857-29f416d0de32~rt_auto-cr_0.0.1242.1552-rs_1700.jpg"
+              alt="description"
+              class="ck-img zoom-out"
+            />
+          </div>
+          <!-- <div class="slide-placeholder">C &amp; K</div> -->
+          <div class="ck-slide">
+            <img
+              src="Images//Home/19abf501-324d-4971-ac32-e8eaa46f9291~rt_auto-cr_0.0.1875.2500-rs_2048.jpg"
+              alt="description"
+              class="ck-img zoom-out"
+            />
+          </div>
+          <!-- <div class="slide-placeholder">♡</div> -->
+          <div class="ck-slide">
+            <img
+              src="Images//Home/8435ba41-25c9-4e22-a33d-36a49bc43a64~rt_auto-cr_0.0.1320.2300-rs_2048.jpg"
+              alt="description"
+              class="ck-img zoom-out"
+            />
+          </div>
+          <div class="ck-slide">
+            <img
+              src="Images//Home/a9929178-45a4-47e3-be47-051ec10cf5ea~rt_auto-cr_0.0.1875.2500-rs_2048.jpg"
+              alt="description"
+              class="ck-img"
+              style="object-position: 30% 20%"
+            />
+          </div>
+          <div class="ck-slide">
+            <img
+              src="Images//Home/e1ff23d6-0f12-464f-aba5-835630003cc0~rt_auto-cr_0.0.1875.2500-rs_1700.jpg"
+              alt="description"
+              class="ck-img focus-lower-third"
+            />
+          </div>
+        </div>
+
+        <button class="ck-prev" aria-label="Previous">&#8249;</button>
+        <button class="ck-next" aria-label="Next">&#8250;</button>
+
+        <div class="ck-dots"></div>
       </section>
 
       <!-- Quick info strip -->
@@ -134,5 +194,61 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="nav.js"></script>
+    <script>
+      (function () {
+        const section = document.getElementById("photoCarousel");
+        const slides = Array.from(section.querySelectorAll(".ck-slide"));
+        const dotsEl = section.querySelector(".ck-dots");
+        const INTERVAL = 5000;
+        const FADE_MS = 800;
+        let current = 0;
+        let timer = null;
+
+        // Build dot indicators
+        slides.forEach((_, i) => {
+          const d = document.createElement("button");
+          d.className = i === 0 ? "ck-dot active" : "ck-dot";
+          d.addEventListener("click", () => goTo(i));
+          dotsEl.appendChild(d);
+        });
+
+        function goTo(next) {
+          if (next === current) return;
+          slides[current].classList.remove("active");
+          dotsEl.children[current].classList.remove("active");
+          current = (next + slides.length) % slides.length;
+          slides[current].classList.add("active");
+          dotsEl.children[current].classList.add("active");
+        }
+
+        function advance() {
+          goTo(current + 1);
+        }
+
+        function startTimer() {
+          if (timer) return;
+          timer = setInterval(advance, INTERVAL);
+        }
+
+        // Prev / next buttons
+        section.querySelector(".ck-prev").addEventListener("click", () => {
+          goTo(current - 1);
+        });
+        section.querySelector(".ck-next").addEventListener("click", () => {
+          goTo(current + 1);
+        });
+
+        // Start autoplay only once the full carousel is visible
+        new IntersectionObserver(
+          (entries, obs) => {
+            if (entries[0].intersectionRatio >= 1) {
+              startTimer();
+              obs.disconnect();
+            }
+          },
+          { threshold: 1.0 },
+        ).observe(section);
+      })();
+    </script>
   </body>
 </html>

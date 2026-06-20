@@ -1,8 +1,6 @@
-/* =====================================================
-   MODERN CONTRAST – BLACK  |  Cheyhoma & Kody Wedding
-   ===================================================== */
+/* Cheyhoma & Kody Wedding — Modern Contrast Black */
 
-/* ---------- Tokens ---------- */
+/* Color & font variables used throughout the site */
 :root {
   --black:   #0a0a0a;
   --white:   #f5f3ef;
@@ -15,7 +13,7 @@
   --font-script: 'Parisienne', cursive;
 }
 
-/* ---------- Reset / Base ---------- */
+/* Reset / Base */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -34,7 +32,7 @@ img { max-width: 100%; display: block; }
 
 a { color: inherit; text-decoration: none; }
 
-/* ---------- Shared Typography ---------- */
+/* Typography */
 h1, h2, h3, h4, h5 {
   font-family: var(--font-serif);
   font-weight: 300;
@@ -83,7 +81,7 @@ h1, h2, h3, h4, h5 {
   flex-shrink: 0;
 }
 
-/* ---------- Navigation ---------- */
+/* Navigation */
 .site-nav {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -93,7 +91,7 @@ h1, h2, h3, h4, h5 {
   transition: background .3s;
 }
 
-/* monogram in center between nav groups on large screens */
+
 .nav-inner {
   display: flex;
   align-items: center;
@@ -137,7 +135,7 @@ h1, h2, h3, h4, h5 {
   border-bottom-color: var(--gold);
 }
 
-/* hamburger */
+
 .nav-toggler {
   background: none;
   border: none;
@@ -154,7 +152,7 @@ h1, h2, h3, h4, h5 {
   transition: transform .3s, opacity .3s;
 }
 
-/* mobile drawer */
+
 .nav-drawer {
   display: none;
   flex-direction: column;
@@ -181,10 +179,103 @@ h1, h2, h3, h4, h5 {
   padding-bottom: 2px;
 }
 
-/* ---------- Page wrapper (push content below fixed nav) ---------- */
+/* Pushes page content below the fixed nav bar */
 .page-wrap { padding-top: 62px; }
 
-/* ---------- Hero Section (index.html) ---------- */
+/* Photo carousel (home page, below hero) */
+#photoCarousel {
+  position: relative;
+  background: var(--mid);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+/* All slides stack on top of each other; active fades in over the outgoing one */
+.ck-track {
+  position: relative;
+}
+.ck-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+/* The active slide sits on top and is fully visible.
+   The min-height matches .slide-placeholder so the track has height. */
+.ck-slide.active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.slide-placeholder {
+  width: 100%;
+  height: clamp(280px, 55vw, 620px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mid);
+  font-family: var(--font-script);
+  font-size: 3rem;
+  color: var(--rule);
+}
+
+/* Carousel images — use class="ck-img" and add a focus-* class to control crop position */
+.ck-img {
+  width: 100%;
+  height: clamp(280px, 55vw, 620px);
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ck-prev,
+.ck-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  padding: 0 1rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s;
+}
+.ck-prev { left: 0; }
+.ck-next { right: 0; }
+.ck-prev:hover,
+.ck-next:hover { color: var(--white); cursor: pointer; }
+
+.ck-dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+.ck-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--rule);
+  border: none;
+  border-radius: 0;
+  transform: rotate(45deg);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.ck-dot.active { background: var(--gold); }
+
+/* Home page hero */
 .hero {
   min-height: 100svh;
   display: flex;
@@ -194,22 +285,11 @@ h1, h2, h3, h4, h5 {
   text-align: center;
   position: relative;
   overflow: hidden;
-  padding: 5rem 1.5rem 4rem;
+  padding: 4rem 1.5rem 3rem;
   background: var(--black);
 }
 
-/* optional: if you add a hero background image, uncomment:
-.hero {
-  background-image: url('img/hero.jpg');
-  background-size: cover;
-  background-position: center;
-}
-.hero::after {
-  content:''; position:absolute; inset:0;
-  background: rgba(0,0,0,.55);
-}
-.hero > * { position: relative; z-index: 1; }
-*/
+/* To add a background photo: set background-image on .hero, add a dark overlay with .hero::after, and set position:relative;z-index:1 on .hero > * */
 
 .hero-pretext {
   font-size: .65rem;
@@ -271,29 +351,145 @@ h1, h2, h3, h4, h5 {
   margin: 2rem auto 0;
 }
 
-/* Hero ornament needs an explicit width because the hero is a flex column
-   with align-items:center, which collapses the ornament to content-width
-   and leaves no space for the ::before/::after lines to grow into. */
+/* Without an explicit width the ornament lines disappear in the flex hero */
 .hero .ornament { width: 220px; }
 
-/* ---------- Story Timeline ---------- */
-/* Override the inline width:50% so both sides share space equally */
-#timeline > .col-12.d-flex > div:first-child {
-  flex: 1 1 0 !important;
-  width: auto !important;
-  min-width: 0;
+/* Story timeline */
+.tl-item {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 4rem;
 }
-#timeline > .col-12.d-flex > div:last-child {
-  flex: 1 1 0 !important;
-  width: auto !important;
+.tl-item:last-child { margin-bottom: 0; }
+
+/* Each side (text or photo) takes equal space */
+.tl-side {
+  flex: 1 1 0;
   min-width: 0;
-}
-/* Keep the connector from stretching */
-#timeline > .col-12.d-flex > div:nth-child(2) {
-  flex-shrink: 0;
 }
 
-/* ---------- Page Hero (inner pages) ---------- */
+/* Text side */
+.tl-text {
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tl-title {
+  font-family: var(--font-script);
+  font-size: 1.6rem;
+  color: var(--gold);
+  display: block;
+}
+.tl-date {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  margin: 0.25rem 0 0.6rem;
+}
+.tl-desc {
+  font-size: 0.95rem;
+  color: var(--ivory);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Center spine */
+.tl-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 1.5rem;
+}
+.tl-line {
+  width: 1px;
+  flex: 1;
+  background: var(--rule);
+}
+.tl-line--hidden { opacity: 0; }
+.tl-diamond {
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.tl-diamond--lg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Photo side */
+.tl-photo-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+}
+.tl-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--mid);
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--rule);
+}
+.tl-photo-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border: 2px solid var(--gold);
+  box-shadow: inset 0 0 0 2px var(--black), 0 8px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Focus helpers — add one of these classes to an <img> to control which
+   part of the photo is visible. Useful for portrait shots that get cropped.
+   Example: <img class="tl-photo-img focus-top" ...>
+
+   focus-top    — shows the top of the photo (good for faces near the top)
+   focus-bottom — shows the bottom
+   focus-left   — shows the left side
+   focus-right  — shows the right side
+   focus-XX-YY  — custom: replace with any CSS value, e.g. style="object-position: 50% 20%"
+*/
+.focus-top          { object-position: center top; }
+.focus-upper-third  { object-position: center 75%; }
+.focus-lower-third  { object-position: center 25%; }
+.focus-bottom       { object-position: center bottom; }
+.focus-left         { object-position: left center; }
+.focus-right        { object-position: right center; }
+
+/* zoom-out — shows the full image without any cropping.
+   Black fills the empty space on portrait shots.
+   Example: <img class="ck-img zoom-out" ...> */
+.zoom-out {
+  object-fit: contain;
+  background: var(--black);
+}
+
+/* On mobile, stack everything vertically — photo above text */
+@media (max-width: 767px) {
+  .tl-item,
+  .tl-item.tl-flip {
+    flex-direction: column;
+    align-items: center;
+  }
+  .tl-side { width: 100%; padding: 0; }
+  .tl-photo-side { margin-bottom: 1.5rem; }
+  .tl-text { text-align: center !important; margin-top: 1rem; }
+  .tl-spine { flex-direction: row; width: 100%; padding: 0.75rem 0; }
+  .tl-line { flex: 1; height: 1px; width: auto; }
+}
+
+/* Inner page hero banner */
 .page-hero {
   padding: 5rem 1.5rem 4rem;
   text-align: center;
@@ -306,7 +502,7 @@ h1, h2, h3, h4, h5 {
   letter-spacing: .06em;
 }
 
-/* ---------- Content Sections ---------- */
+/* Content sections */
 .content-section {
   padding: 5rem 1.5rem;
 }
@@ -319,7 +515,7 @@ h1, h2, h3, h4, h5 {
 .medium { max-width: 900px; margin: 0 auto; }
 .wide   { max-width: 1100px; margin: 0 auto; }
 
-/* ---------- Bordered / Contrast Blocks ---------- */
+/* Bordered blocks */
 .block-bordered {
   border: 1px solid var(--rule);
   padding: 2.5rem 2rem;
@@ -331,7 +527,7 @@ h1, h2, h3, h4, h5 {
   padding: 2.5rem 2rem;
 }
 
-/* ---------- Buttons ---------- */
+/* Buttons */
 .btn-wedding {
   display: inline-block;
   font-family: var(--font-sans);
@@ -358,7 +554,7 @@ h1, h2, h3, h4, h5 {
   color: var(--black);
 }
 
-/* ---------- Story Section ---------- */
+/* Story text */
 .story-text {
   font-family: var(--font-serif);
   font-size: clamp(1.1rem, 2.5vw, 1.35rem);
@@ -367,7 +563,7 @@ h1, h2, h3, h4, h5 {
   color: var(--ivory);
 }
 
-/* ---------- Wedding Details Cards ---------- */
+/* Wedding detail cards (Q&A page) */
 .details-card {
   border: 1px solid var(--rule);
   padding: 2.5rem 2rem;
@@ -399,7 +595,7 @@ h1, h2, h3, h4, h5 {
   line-height: 1.8;
 }
 
-/* ---------- Photo Grid ---------- */
+/* Photo grid */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -422,7 +618,7 @@ h1, h2, h3, h4, h5 {
 
 .photo-tile:hover img { transform: scale(1.05); filter: grayscale(0%); }
 
-/* placeholder when no image */
+
 .photo-placeholder {
   width: 100%; height: 100%;
   display: flex;
@@ -433,7 +629,7 @@ h1, h2, h3, h4, h5 {
   color: var(--rule);
 }
 
-/* ---------- Wedding Party ---------- */
+/* Wedding party cards */
 .party-card {
   text-align: center;
   padding: 1rem;
@@ -479,7 +675,7 @@ h1, h2, h3, h4, h5 {
   color: var(--gold);
 }
 
-/* ---------- Q&A Accordion ---------- */
+/* Q&A accordion */
 .qa-item {
   border-bottom: 1px solid var(--rule);
 }
@@ -531,7 +727,7 @@ h1, h2, h3, h4, h5 {
   line-height: 1.9;
 }
 
-/* ---------- Travel Cards ---------- */
+/* Travel cards */
 .travel-card {
   background: var(--mid);
   border: 1px solid var(--rule);
@@ -565,7 +761,7 @@ h1, h2, h3, h4, h5 {
   padding: .7rem 2rem;
 }
 
-/* ---------- Registry ---------- */
+/* Registry cards */
 .registry-card {
   border: 1px solid var(--rule);
   padding: 3rem 2rem;
@@ -590,7 +786,7 @@ h1, h2, h3, h4, h5 {
   margin-bottom: 1.5rem;
 }
 
-/* ---------- Dress Code Swatch ---------- */
+/* Dress code color swatches */
 .swatch-row {
   display: flex;
   flex-wrap: wrap;
@@ -619,7 +815,7 @@ h1, h2, h3, h4, h5 {
   color: var(--ivory);
 }
 
-/* ---------- Footer ---------- */
+/* Footer */
 .site-footer {
   border-top: 1px solid var(--rule);
   text-align: center;
@@ -641,7 +837,7 @@ h1, h2, h3, h4, h5 {
   color: var(--gold);
 }
 
-/* ---------- Responsive overrides ---------- */
+/* Mobile overrides */
 @media (max-width: 991.98px) {
   .nav-desktop { display: none !important; }
   .nav-toggler  { display: flex; }
@@ -654,12 +850,13 @@ h1, h2, h3, h4, h5 {
 }
 
 @media (max-width: 575.98px) {
+  .hero { min-height: 85svh; padding: 2.5rem 1.25rem 2rem; }
   .hero-we-do { letter-spacing: .04em; }
   .content-section { padding: 3.5rem 1.25rem; }
   .block-bordered { padding: 2rem 1.25rem; }
   .party-card-img, .party-card-img-placeholder { width: 140px; height: 140px; }
 
-  /* Photo grid: always 2 columns on mobile so the feature span works */
+  
   .photo-grid {
     grid-template-columns: 1fr 1fr;
   }

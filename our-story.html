@@ -49,229 +49,113 @@
             <div class="ornament"><div class="ornament-diamond"></div></div>
           </div>
 
-          <!-- Timeline items -->
-          <div class="row g-0" id="timeline">
-            <!-- item 1 -->
-            <div class="col-12 d-flex mb-5">
-              <div
-                class="text-end pe-4 flex-shrink-0"
-                style="width: 50%; padding-top: 0.2rem"
-              >
-                <span
-                  style="
-                    font-family: var(--font-script);
-                    font-size: 1.6rem;
-                    color: var(--gold);
-                  "
-                  >The Beginning</span
-                >
-                <p
-                  style="
-                    font-size: 0.68rem;
-                    letter-spacing: 0.2em;
-                    text-transform: uppercase;
-                    color: var(--ivory);
-                    margin-top: 0.25rem;
-                  "
-                >
-                  Month, Year
-                </p>
-              </div>
-              <div
-                style="
-                  position: relative;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 0 1.5rem;
-                "
-              >
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-                <div
-                  style="
-                    width: 10px;
-                    height: 10px;
-                    background: var(--gold);
-                    transform: rotate(45deg);
-                    flex-shrink: 0;
-                  "
-                ></div>
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-              </div>
-              <div class="ps-4" style="width: 50%">
-                <p class="story-text" style="font-size: 0.95rem">
+          <!-- Timeline items
+               To add a photo: replace <div class="tl-photo-placeholder"> with <img src="img/yourphoto.jpg" alt="..." class="tl-photo-img">
+               To add a new milestone: copy a .tl-item block. Odd items (1st, 3rd…) have text left / photo right. Even items flip automatically. -->
+
+          <!-- Show the top -->
+          <!-- <img class="tl-photo-img focus-top" src="..." /> -->
+          <!-- Upper 3rd  -->
+          <!-- <img class="tl-photo-img focus-upper-third" src="..." /> -->
+
+          <!-- Show the bottom -->
+          <!-- <img class="tl-photo-img focus-bottom" src="..." /> -->
+          <!-- Bottom 3rd -->
+          <!-- <img class="tl-photo-img focus-lower-third" src="..." /> -->
+          <div id="timeline">
+            <!-- item 1: text left, photo right -->
+            <div class="tl-item">
+              <div class="tl-side tl-text text-end">
+                <span class="tl-title">The Beginning</span>
+                <p class="tl-date">Month, Year</p>
+                <p class="tl-desc">
                   Describe how you first met. What was the setting? What did you
                   talk about? What was your first impression?
                 </p>
               </div>
+              <div class="tl-spine">
+                <div class="tl-line"></div>
+                <div class="tl-diamond"></div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-side tl-photo-side">
+                <!-- <div class="tl-photo-placeholder">C &amp; K</div> -->
+                <img
+                  src="Images/Our Story/a2ed38e8-b41e-4771-b8bf-f8d218aa275f~rt_auto-rs_1700.jpg"
+                  alt="description"
+                  class="tl-photo-img focus-top"
+                />
+              </div>
             </div>
 
-            <!-- item 2 -->
-            <div class="col-12 d-flex mb-5">
-              <div
-                class="text-end pe-4 flex-shrink-0"
-                style="width: 50%; padding-top: 0.2rem"
-              >
-                <span
-                  style="
-                    font-family: var(--font-script);
-                    font-size: 1.6rem;
-                    color: var(--gold);
-                  "
-                  >First Date</span
-                >
-                <p
-                  style="
-                    font-size: 0.68rem;
-                    letter-spacing: 0.2em;
-                    text-transform: uppercase;
-                    color: var(--ivory);
-                    margin-top: 0.25rem;
-                  "
-                >
-                  Month, Year
-                </p>
+            <!-- item 2: photo left, text right -->
+            <div class="tl-item tl-flip">
+              <div class="tl-side tl-photo-side">
+                <!-- <div class="tl-photo-placeholder">♡</div> -->
+                <img
+                  src="Images/Our Story/74961e5d-bda4-4a73-9c7b-905bff8b3d74~rt_auto-rs_1700.jpg"
+                  alt="description"
+                  class="tl-photo-img"
+                />
               </div>
-              <div
-                style="
-                  position: relative;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 0 1.5rem;
-                "
-              >
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-                <div
-                  style="
-                    width: 10px;
-                    height: 10px;
-                    background: var(--gold);
-                    transform: rotate(45deg);
-                    flex-shrink: 0;
-                  "
-                ></div>
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
+              <div class="tl-spine">
+                <div class="tl-line"></div>
+                <div class="tl-diamond"></div>
+                <div class="tl-line"></div>
               </div>
-              <div class="ps-4" style="width: 50%">
-                <p class="story-text" style="font-size: 0.95rem">
+              <div class="tl-side tl-text">
+                <span class="tl-title">First Date</span>
+                <p class="tl-date">Month, Year</p>
+                <p class="tl-desc">
                   Where did you go? What made it special? A detail or two that
                   only the two of you would remember.
                 </p>
               </div>
             </div>
 
-            <!-- item 3 -->
-            <div class="col-12 d-flex mb-5">
-              <div
-                class="text-end pe-4 flex-shrink-0"
-                style="width: 50%; padding-top: 0.2rem"
-              >
-                <span
-                  style="
-                    font-family: var(--font-script);
-                    font-size: 1.6rem;
-                    color: var(--gold);
-                  "
-                  >The Proposal</span
-                >
-                <p
-                  style="
-                    font-size: 0.68rem;
-                    letter-spacing: 0.2em;
-                    text-transform: uppercase;
-                    color: var(--ivory);
-                    margin-top: 0.25rem;
-                  "
-                >
-                  Month, Year
-                </p>
-              </div>
-              <div
-                style="
-                  position: relative;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 0 1.5rem;
-                "
-              >
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-                <div
-                  style="
-                    width: 10px;
-                    height: 10px;
-                    background: var(--gold);
-                    transform: rotate(45deg);
-                    flex-shrink: 0;
-                  "
-                ></div>
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-              </div>
-              <div class="ps-4" style="width: 50%">
-                <p class="story-text" style="font-size: 0.95rem">
+            <!-- item 3: text left, photo right -->
+            <div class="tl-item">
+              <div class="tl-side tl-text text-end">
+                <span class="tl-title">The Proposal</span>
+                <p class="tl-date">Month, Year</p>
+                <p class="tl-desc">
                   How did the proposal happen? Where were you? What did they
                   say? Describe the moment you said yes.
                 </p>
               </div>
+              <div class="tl-spine">
+                <div class="tl-line"></div>
+                <div class="tl-diamond"></div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-side tl-photo-side">
+                <!-- <div class="tl-photo-placeholder">♡</div> -->
+                <img
+                  src="Images/Our Story/f9ae3438-4dc4-4ce9-9a1f-914a8fe75f75~rt_auto-rs_1700.jpg"
+                  alt="description"
+                  class="tl-photo-img focus-top"
+                />
+              </div>
             </div>
 
-            <!-- item 4 — wedding -->
-            <div class="col-12 d-flex">
-              <div
-                class="text-end pe-4 flex-shrink-0"
-                style="width: 50%; padding-top: 0.2rem"
-              >
-                <span
-                  style="
-                    font-family: var(--font-script);
-                    font-size: 1.6rem;
-                    color: var(--gold);
-                  "
-                  >The Wedding</span
-                >
-                <p
-                  style="
-                    font-size: 0.68rem;
-                    letter-spacing: 0.2em;
-                    text-transform: uppercase;
-                    color: var(--ivory);
-                    margin-top: 0.25rem;
-                  "
-                >
-                  February 27, 2027
-                </p>
+            <!-- item 4: photo left, text right — wedding (larger diamond, no bottom line) -->
+            <div class="tl-item tl-flip">
+              <div class="tl-side tl-photo-side">
+                <img
+                  src="Images/Our Story/c9d098d1-0bdf-4006-8620-f8e644aaf528~rt_auto-rs_1700.jpg"
+                  alt="description"
+                  class="tl-photo-img"
+                />
               </div>
-              <div
-                style="
-                  position: relative;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 0 1.5rem;
-                "
-              >
-                <div style="width: 1px; flex: 1; background: var(--rule)"></div>
-                <div
-                  style="
-                    width: 14px;
-                    height: 14px;
-                    background: var(--gold);
-                    transform: rotate(45deg);
-                    flex-shrink: 0;
-                  "
-                ></div>
-                <div
-                  style="
-                    width: 1px;
-                    flex: 1;
-                    background: var(--rule);
-                    opacity: 0;
-                  "
-                ></div>
+              <div class="tl-spine">
+                <div class="tl-line"></div>
+                <div class="tl-diamond tl-diamond--lg"></div>
+                <div class="tl-line tl-line--hidden"></div>
               </div>
-              <div class="ps-4" style="width: 50%">
-                <p class="story-text" style="font-size: 0.95rem">
+              <div class="tl-side tl-text">
+                <span class="tl-title">The Wedding</span>
+                <p class="tl-date">February 27, 2027</p>
+                <p class="tl-desc">
                   Newcastle, Oklahoma. The next chapter begins — and we want you
                   there to witness it.
                 </p>
