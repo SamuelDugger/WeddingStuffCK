@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RSVP | Cheyhoma &amp; Kody</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ---- RSVP-specific styles ---- */
+    .rsvp-input {
+      background: var(--mid);
+      border: 1px solid var(--rule);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: .85rem;
+      letter-spacing: .04em;
+      padding: .85rem 1.1rem;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s;
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+    .rsvp-input:focus { border-color: var(--gold); }
+    .rsvp-input::placeholder { color: rgba(245,243,239,.35); }
+    .rsvp-input option { background: var(--mid); color: var(--white); }
+
+    .rsvp-label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: .62rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .45rem;
+    }
+
+    /* Search results list */
+    .guest-results {
+      list-style: none;
+      padding: 0; margin: 0;
+      border: 1px solid var(--rule);
+      border-top: none;
+    }
+    .guest-results li {
+      padding: .85rem 1.1rem;
+      font-size: .85rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--rule);
+      transition: background .15s, color .15s;
+    }
+    .guest-results li:last-child { border-bottom: none; }
+    .guest-results li:hover, .guest-results li:focus {
+      background: var(--mid);
+      color: var(--gold);
+      outline: none;
+    }
+
+    /* Event card inside RSVP form */
+    .event-card {
+      border: 1px solid var(--rule);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: border-color .2s;
+    }
+    .event-card.attending { border-color: var(--gold); }
+    .event-card.declining { border-color: rgba(245,243,239,.15); opacity: .65; }
+
+    .event-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .event-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin: 0;
+    }
+
+    .event-card .event-meta {
+      font-size: .72rem;
+      color: var(--ivory);
+      letter-spacing: .08em;
+      margin-top: .35rem;
+      line-height: 1.8;
+    }
+
+    /* Toggle buttons: Accepts / Declines */
+    .attend-toggle {
+      display: flex;
+      gap: .5rem;
+      flex-shrink: 0;
+    }
+    .attend-btn {
+      background: none;
+      border: 1px solid var(--rule);
+      color: var(--ivory);
+      font-family: var(--font-sans);
+      font-size: .58rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .5rem 1rem;
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .attend-btn.yes.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--black);
+    }
+    .attend-btn.no.active {
+      background: var(--white);
+      border-color: var(--white);
+      color: var(--black);
+    }
+
+    .event-extra { margin-top: 1rem; display: none; }
+    .event-extra.visible { display: block; }
+
+    /* Steps */
+    .rsvp-step { display: none; }
+    .rsvp-step.active { display: block; }
+
+    /* Confirmation checkmark area */
+    .confirm-icon {
+      font-family: var(--font-script);
+      font-size: 3.5rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: .5rem;
+    }
+
+    /* Error message */
+    .rsvp-error {
+      color: #e07070;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      margin-top: .5rem;
+      display: none;
+    }
+    .rsvp-error.visible { display: block; }
+
+    /* Existing RSVP summary badge */
+    .rsvp-badge {
+      display: inline-block;
+      font-size: .58rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: .25rem .7rem;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      margin-left: .75rem;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <div class="page-hero">
+      <span class="section-eyebrow">Cheyhoma &amp; Kody</span>
+      <h1 class="page-hero-title">RSVP</h1>
+      <div class="ornament"><div class="ornament-diamond"></div></div>
+    </div>
+
+    <section class="content-section">
+      <div class="narrow">
+
+        <!-- ── Step 1: Name search ── -->
+        <div class="rsvp-step active" id="step-search">
+          <div class="text-center mb-5">
+            <span class="section-eyebrow">Step 1 of 2</span>
+            <h2 class="section-title mb-3">Find Your Invitation</h2>
+            <p style="font-size:.85rem;color:var(--ivory);">
+              Enter your first or last name as it appears on your invitation.
+            </p>
+          </div>
+
+          <label class="rsvp-label" for="nameSearch">Your Name</label>
+          <input
+            id="nameSearch"
+            class="rsvp-input"
+            type="text"
+            placeholder="e.g. Smith or John Smith"
+            autocomplete="off"
+            autocorrect="off"
+          />
+          <ul class="guest-results" id="guestResults" style="display:none;"></ul>
+          <p class="rsvp-error" id="searchError">
+            We couldn't find that name on our list. Please double-check the spelling
+            or contact Cheyhoma or Kody directly.
+          </p>
+        </div>
+
+        <!-- ── Step 2: RSVP form ── -->
+        <div class="rsvp-step" id="step-form">
+          <div class="text-center mb-5">
+            <span class="section-eyebrow">Step 2 of 2</span>
+            <h2 class="section-title mb-1" id="formGuestName"></h2>
+            <p style="font-size:.78rem;color:var(--ivory);" id="formGuestNote"></p>
+          </div>
+
+          <form id="rsvpForm" novalidate>
+            <!-- Plus-one field injected here if applicable -->
+            <div id="plusOneSection" style="display:none;margin-bottom:2rem;">
+              <label class="rsvp-label" for="plusOneName">Plus-One Name (optional)</label>
+              <input id="plusOneName" class="rsvp-input" type="text" placeholder="Guest's full name" />
+            </div>
+
+            <!-- Event cards injected here by JS -->
+            <div id="eventCards"></div>
+
+            <!-- Dietary / notes -->
+            <div style="margin-top:1.5rem;">
+              <label class="rsvp-label" for="dietaryNotes">Dietary Restrictions or Notes</label>
+              <textarea
+                id="dietaryNotes"
+                class="rsvp-input"
+                rows="3"
+                placeholder="Allergies, dietary needs, or anything else we should know…"
+                style="resize:vertical;"
+              ></textarea>
+            </div>
+
+            <p class="rsvp-error" id="formError">Please select Accepts or Declines for each event before submitting.</p>
+
+            <div class="text-center mt-4 d-flex gap-3 justify-content-center flex-wrap">
+              <button type="button" class="btn-wedding" style="font-size:.6rem;" id="backBtn">← Back</button>
+              <button type="submit" class="btn-wedding btn-wedding-gold" style="font-size:.6rem;">Submit RSVP</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ── Step 3: Confirmation ── -->
+        <div class="rsvp-step" id="step-confirm">
+          <div class="text-center">
+            <span class="confirm-icon">✓</span>
+            <span class="section-eyebrow">Thank You</span>
+            <h2 class="section-title mb-3" id="confirmTitle">RSVP Received</h2>
+            <p style="font-size:.85rem;color:var(--ivory);margin-bottom:2rem;" id="confirmBody"></p>
+
+            <div id="confirmSummary" style="text-align:left;margin-bottom:2rem;"></div>
+
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+              <button class="btn-wedding" style="font-size:.6rem;" id="editRsvpBtn">Update My RSVP</button>
+              <a href="index.html" class="btn-wedding btn-wedding-gold" style="font-size:.6rem;">Back to Home</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="guests.js"></script>
+  <script src="nav.js"></script>
+  <script>
+  (() => {
+    // ---------- helpers ----------
+    const $ = id => document.getElementById(id);
+    const STORAGE_KEY = 'wedding_rsvps';
+
+    function loadRsvps() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
+    }
+    function saveRsvps(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // Normalize a string for fuzzy matching
+    function norm(s) { return s.toLowerCase().replace(/[^a-z\s]/g, '').trim(); }
+
+    // Search guest list by any word in the query
+    function searchGuests(query) {
+      const words = norm(query).split(/\s+/).filter(Boolean);
+      if (!words.length) return [];
+      return GUEST_LIST.filter(g => {
+        const n = norm(g.name);
+        return words.every(w => n.includes(w));
+      });
+    }
+
+    // ---------- steps ----------
+    function showStep(id) {
+      document.querySelectorAll('.rsvp-step').forEach(s => s.classList.remove('active'));
+      $(id).classList.add('active');
+    }
+
+    // ---------- Step 1: search ----------
+    let selectedGuest = null;
+
+    const nameInput  = $('nameSearch');
+    const resultsList = $('guestResults');
+    const searchError = $('searchError');
+
+    nameInput.addEventListener('input', () => {
+      const q = nameInput.value.trim();
+      searchError.classList.remove('visible');
+      if (q.length < 2) { resultsList.style.display = 'none'; resultsList.innerHTML = ''; return; }
+
+      const matches = searchGuests(q);
+      if (!matches.length) {
+        resultsList.style.display = 'none';
+        resultsList.innerHTML = '';
+        return;
+      }
+
+      resultsList.innerHTML = matches.map(g => {
+        const existing = loadRsvps()[g.id];
+        const badge = existing ? '<span class="rsvp-badge">RSVP on file</span>' : '';
+        return `<li tabindex="0" data-id="${g.id}">${g.name}${badge}</li>`;
+      }).join('');
+      resultsList.style.display = 'block';
+    });
+
+    resultsList.addEventListener('click', e => {
+      const li = e.target.closest('li[data-id]');
+      if (!li) return;
+      pickGuest(parseInt(li.dataset.id, 10));
+    });
+    resultsList.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const li = e.target.closest('li[data-id]');
+        if (li) pickGuest(parseInt(li.dataset.id, 10));
+      }
+    });
+
+    nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const matches = searchGuests(nameInput.value.trim());
+        if (matches.length === 1) { pickGuest(matches[0].id); return; }
+        if (!matches.length) searchError.classList.add('visible');
+      }
+    });
+
+    function pickGuest(id) {
+      selectedGuest = GUEST_LIST.find(g => g.id === id);
+      resultsList.style.display = 'none';
+      if (!selectedGuest) return;
+      buildForm(selectedGuest);
+      showStep('step-form');
+    }
+
+    // ---------- Step 2: form ----------
+    function buildForm(guest) {
+      $('formGuestName').textContent = guest.name;
+      $('formGuestNote').textContent =
+        `You're invited to ${guest.events.length} event${guest.events.length > 1 ? 's' : ''} below.`;
+
+      // Plus-one
+      const plusSec = $('plusOneSection');
+      if (guest.plusOne) { plusSec.style.display = 'block'; }
+      else { plusSec.style.display = 'none'; $('plusOneName').value = ''; }
+
+      // Load existing RSVP if any
+      const existing = loadRsvps()[guest.id];
+
+      // Build event cards
+      const container = $('eventCards');
+      container.innerHTML = '';
+
+      guest.events.forEach(evId => {
+        const ev = WEDDING_EVENTS[evId];
+        if (!ev) return;
+
+        const saved = existing?.events?.[evId];
+        const savedAttending = saved?.attending; // true / false / undefined
+
+        const card = document.createElement('div');
+        card.className = 'event-card' + (savedAttending === true ? ' attending' : savedAttending === false ? ' declining' : '');
+        card.dataset.eventId = evId;
+
+        const mealHtml = ev.mealChoices && ev.mealChoices.length
+          ? `<div style="margin-top:.75rem;">
+               <label class="rsvp-label" for="meal-${evId}">Meal Preference</label>
+               <select id="meal-${evId}" class="rsvp-input" name="meal-${evId}">
+                 <option value="">Select…</option>
+                 ${ev.mealChoices.map(c => `<option value="${c}"${saved?.meal===c?' selected':''}>${c}</option>`).join('')}
+               </select>
+             </div>`
+          : '';
+
+        const existingBadge = saved
+          ? `<span class="rsvp-badge">${saved.attending ? 'Attending' : 'Declined'}</span>`
+          : '';
+
+        card.innerHTML = `
+          <div class="event-card-header">
+            <div>
+              <h3>${ev.label}${existingBadge}</h3>
+              <p class="event-meta">${ev.date} · ${ev.time}<br />${ev.location}</p>
+              ${ev.deadline ? `<p style="font-size:.65rem;color:var(--gold);margin-top:.35rem;letter-spacing:.1em;">RSVP by ${ev.deadline}</p>` : ''}
+            </div>
+            <div class="attend-toggle">
+              <button type="button" class="attend-btn yes${savedAttending===true?' active':''}" data-ev="${evId}" data-val="yes">Accepts</button>
+              <button type="button" class="attend-btn no${savedAttending===false?' active':''}"  data-ev="${evId}" data-val="no">Declines</button>
+            </div>
+          </div>
+          <div class="event-extra${savedAttending===true?' visible':''}" id="extra-${evId}">
+            ${mealHtml}
+          </div>`;
+
+        container.appendChild(card);
+      });
+
+      // Load saved dietary notes
+      if (existing?.dietary) $('dietaryNotes').value = existing.dietary;
+      else $('dietaryNotes').value = '';
+
+      // Load saved plusOne
+      if (existing?.plusOneName) $('plusOneName').value = existing.plusOneName;
+
+      attachToggleListeners();
+    }
+
+    function attachToggleListeners() {
+      document.querySelectorAll('.attend-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const evId = btn.dataset.ev;
+          const val  = btn.dataset.val; // 'yes' or 'no'
+          const card = btn.closest('.event-card');
+          const extra = $('extra-' + evId);
+
+          card.querySelector('.attend-btn.yes').classList.remove('active');
+          card.querySelector('.attend-btn.no').classList.remove('active');
+          btn.classList.add('active');
+
+          card.classList.remove('attending', 'declining');
+          if (val === 'yes') { card.classList.add('attending'); extra.classList.add('visible'); }
+          else               { card.classList.add('declining'); extra.classList.remove('visible'); }
+
+          $('formError').classList.remove('visible');
+        });
+      });
+    }
+
+    $('backBtn').addEventListener('click', () => showStep('step-search'));
+
+    // ---------- Submit ----------
+    $('rsvpForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!selectedGuest) return;
+
+      // Validate: every event must have a choice
+      const cards = document.querySelectorAll('.event-card');
+      let valid = true;
+      cards.forEach(card => {
+        const yesActive = card.querySelector('.attend-btn.yes.active');
+        const noActive  = card.querySelector('.attend-btn.no.active');
+        if (!yesActive && !noActive) valid = false;
+      });
+      if (!valid) { $('formError').classList.add('visible'); return; }
+
+      // Build submission object
+      const eventsData = {};
+      cards.forEach(card => {
+        const evId     = card.dataset.eventId;
+        const attending = card.querySelector('.attend-btn.yes.active') !== null;
+        const mealSel  = card.querySelector(`select[name="meal-${evId}"]`);
+        eventsData[evId] = {
+          attending,
+          meal: mealSel ? mealSel.value : '',
+        };
+      });
+
+      const submission = {
+        guestId:      selectedGuest.id,
+        name:         selectedGuest.name,
+        plusOneName:  $('plusOneName').value.trim(),
+        dietary:      $('dietaryNotes').value.trim(),
+        submittedAt:  new Date().toISOString(),
+        events:       eventsData,
+      };
+
+      // Always save to localStorage as a local cache (powers the "RSVP on file" badge)
+      const all = loadRsvps();
+      all[selectedGuest.id] = submission;
+      saveRsvps(all);
+
+      // If a backend URL is configured, POST to Google Sheets
+      if (typeof APPS_SCRIPT_URL !== 'undefined' && APPS_SCRIPT_URL) {
+        const submitBtn = $('rsvpForm').querySelector('[type=submit]');
+        const origText  = submitBtn.textContent;
+        submitBtn.textContent = 'Saving…';
+        submitBtn.disabled    = true;
+
+        try {
+          // no-cors because Apps Script redirects — we can't read the response
+          // body but the data goes through. localStorage is the fallback either way.
+          await fetch(APPS_SCRIPT_URL, {
+            method:  'POST',
+            mode:    'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body:    JSON.stringify(submission),
+          });
+        } catch {
+          // Network failure — localStorage still has it as backup.
+          // The admin page will show anything that made it to the sheet.
+        }
+
+        submitBtn.textContent = origText;
+        submitBtn.disabled    = false;
+      }
+
+      showConfirmation(submission);
+    });
+
+    // ---------- Step 3: Confirmation ----------
+    function showConfirmation(sub) {
+      $('confirmTitle').textContent = `Thank you, ${sub.name.split(' ')[0]}!`;
+
+      const attending = Object.entries(sub.events).filter(([,v]) => v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
+      const declining = Object.entries(sub.events).filter(([,v]) => !v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
+
+      $('confirmBody').textContent = attending.length
+        ? `We can't wait to celebrate with you! Your RSVP has been saved.`
+        : `We're sorry you can't make it. Your response has been recorded.`;
+
+      let summaryHtml = '';
+
+      if (attending.length) {
+        summaryHtml += `<div class="block-bordered mb-3">
+          <p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;">Attending</p>
+          <ul style="list-style:none;padding:0;">
+            ${attending.map(n => `<li style="font-size:.85rem;color:var(--ivory);padding:.2rem 0;">✦ &nbsp;${n}</li>`).join('')}
+          </ul>
+        </div>`;
+      }
+      if (declining.length) {
+        summaryHtml += `<div class="block-bordered" style="border-color:rgba(245,243,239,.15);opacity:.7;">
+          <p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ivory);margin-bottom:.75rem;">Unable to Attend</p>
+          <ul style="list-style:none;padding:0;">
+            ${declining.map(n => `<li style="font-size:.85rem;color:var(--ivory);padding:.2rem 0;">${n}</li>`).join('')}
+          </ul>
+        </div>`;
+      }
+
+      $('confirmSummary').innerHTML = summaryHtml;
+      showStep('step-confirm');
+    }
+
+    $('editRsvpBtn').addEventListener('click', () => {
+      if (selectedGuest) { buildForm(selectedGuest); showStep('step-form'); }
+      else showStep('step-search');
+    });
+
+    // ---------- Auto-restore if guest already RSVP'd ----------
+    // If URL has ?guest=id, jump straight to confirmation for that guest
+    const params = new URLSearchParams(location.search);
+    const preId  = parseInt(params.get('guest'), 10);
+    if (preId) {
+      const rsvps = loadRsvps();
+      if (rsvps[preId]) {
+        selectedGuest = GUEST_LIST.find(g => g.id === preId);
+        if (selectedGuest) showConfirmation(rsvps[preId]);
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

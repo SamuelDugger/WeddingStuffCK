@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin | Cheyhoma &amp; Kody</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ---- Admin-specific overrides ---- */
+    .admin-wrap { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* Login gate */
+    #loginGate { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+
+    .admin-input {
+      background: var(--mid);
+      border: 1px solid var(--rule);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: .85rem;
+      padding: .8rem 1rem;
+      outline: none;
+      border-radius: 0;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+    }
+    .admin-input:focus { border-color: var(--gold); }
+
+    /* Stat cards */
+    .stat-card {
+      border: 1px solid var(--rule);
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: .6rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ivory);
+      margin-top: .4rem;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .admin-tab {
+      background: none;
+      border: none;
+      color: var(--ivory);
+      font-family: var(--font-sans);
+      font-size: .62rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: .85rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+      white-space: nowrap;
+    }
+    .admin-tab:hover { color: var(--white); }
+    .admin-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Table */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+    .admin-table th {
+      font-family: var(--font-sans);
+      font-size: .58rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--rule);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .admin-table td {
+      padding: .85rem 1rem;
+      border-bottom: 1px solid rgba(201,169,110,.1);
+      color: var(--ivory);
+      vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: var(--mid); }
+
+    .badge-yes {
+      display: inline-block;
+      font-size: .55rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      background: rgba(201,169,110,.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+    .badge-no {
+      display: inline-block;
+      font-size: .55rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      background: rgba(245,243,239,.05);
+      border: 1px solid rgba(245,243,239,.2);
+      color: rgba(245,243,239,.45);
+    }
+    .badge-pending {
+      display: inline-block;
+      font-size: .55rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      border: 1px dashed rgba(245,243,239,.25);
+      color: rgba(245,243,239,.35);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--rule);
+      color: var(--ivory);
+      font-family: var(--font-sans);
+      font-size: .58rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: .4rem 1rem;
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Delete button */
+    .btn-delete {
+      background: none;
+      border: 1px solid rgba(224,112,112,.4);
+      color: rgba(224,112,112,.7);
+      font-family: var(--font-sans);
+      font-size: .55rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .25rem .65rem;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .btn-delete:hover { background: rgba(224,112,112,.1); color: #e07070; }
+
+    /* Responsive table wrapper */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Section heading inside admin */
+    .admin-section-title {
+      font-size: .6rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- ── Login Gate ── -->
+    <div id="loginGate">
+      <div style="width:100%;max-width:360px;text-align:center;">
+        <span class="section-eyebrow">Admin Access</span>
+        <h1 class="section-title mb-4">RSVP Dashboard</h1>
+        <div class="ornament mb-4"><div class="ornament-diamond"></div></div>
+
+        <label class="rsvp-label" for="adminPass" style="font-family:var(--font-sans);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.45rem;">Password</label>
+        <input id="adminPass" class="admin-input" type="password" placeholder="Enter admin password" style="width:100%;" />
+        <p id="loginError" style="color:#e07070;font-size:.75rem;margin-top:.5rem;display:none;">Incorrect password.</p>
+        <button id="loginBtn" class="btn-wedding btn-wedding-gold" style="width:100%;margin-top:1rem;font-size:.62rem;">Enter</button>
+      </div>
+    </div>
+
+    <!-- ── Dashboard (hidden until logged in) ── -->
+    <div id="dashboard" style="display:none;">
+      <div class="admin-wrap">
+
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+          <div>
+            <span class="section-eyebrow" style="margin-bottom:.2rem;">Admin Dashboard</span>
+            <h2 class="section-title" style="font-size:1.8rem;">RSVP Overview</h2>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;" id="exportCsvBtn">Export CSV</button>
+            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;border-color:rgba(224,112,112,.5);color:rgba(224,112,112,.8);" id="clearAllBtn">Clear All RSVPs</button>
+            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;" id="logoutBtn">Log Out</button>
+          </div>
+        </div>
+
+        <!-- Stat cards — injected by JS -->
+        <div class="row g-3 mb-4" id="statCards"></div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs" id="adminTabs"></div>
+
+        <!-- Tab panels — injected by JS -->
+        <div id="tabPanels"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="guests.js"></script>
+  <script>
+  (() => {
+    const STORAGE_KEY = 'wedding_rsvps';
+    const SESSION_KEY = 'admin_authed';
+
+    function loadLocalRsvps() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
+    }
+    function saveRsvps(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+    // ── Login ──
+    const loginGate  = document.getElementById('loginGate');
+    const dashboard  = document.getElementById('dashboard');
+    const passInput  = document.getElementById('adminPass');
+    const loginError = document.getElementById('loginError');
+
+    function tryLogin() {
+      if (passInput.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        loginGate.style.display = 'none';
+        dashboard.style.display = 'block';
+        renderDashboard();
+        loginError.style.display = 'none';
+      } else {
+        loginError.style.display = 'block';
+        passInput.select();
+      }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', tryLogin);
+    passInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      loginGate.style.display = 'flex';
+      dashboard.style.display = 'none';
+      passInput.value = '';
+    });
+
+    // Auto-login if session is still alive
+    if (sessionStorage.getItem(SESSION_KEY)) {
+      loginGate.style.display = 'none';
+      dashboard.style.display = 'block';
+      renderDashboard();
+    }
+
+    // ── Dashboard ──
+    async function renderDashboard() {
+      const panels = document.getElementById('tabPanels');
+      const stats  = document.getElementById('statCards');
+      stats.innerHTML  = '<p style="color:var(--ivory);font-size:.8rem;padding:1rem 0;letter-spacing:.1em;">Loading…</p>';
+      panels.innerHTML = '';
+
+      const rsvps = await fetchAllRsvps();
+      renderStats(rsvps);
+      renderTabs(rsvps);
+    }
+
+    // Fetch from Google Sheets if URL is set, otherwise fall back to localStorage
+    async function fetchAllRsvps() {
+      if (typeof APPS_SCRIPT_URL !== 'undefined' && APPS_SCRIPT_URL) {
+        try {
+          const res  = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+          const data = await res.json();
+          // Also merge in any localStorage entries the sheet might have missed
+          // (e.g. a submission that failed to reach the network)
+          const local = loadLocalRsvps();
+          return Object.assign({}, local, data);
+        } catch {
+          // Network error — fall back to localStorage with a warning
+          showBanner('Could not reach Google Sheets — showing locally cached responses only.', 'warn');
+          return loadLocalRsvps();
+        }
+      }
+      // No URL configured — localStorage only
+      return loadLocalRsvps();
+    }
+
+    function showBanner(msg, type) {
+      const existing = document.getElementById('adminBanner');
+      if (existing) existing.remove();
+      const b = document.createElement('p');
+      b.id = 'adminBanner';
+      b.style.cssText = `font-size:.75rem;letter-spacing:.08em;padding:.6rem 1rem;margin-bottom:1rem;border:1px solid ${type==='warn'?'#e07070':'var(--gold)'};color:${type==='warn'?'#e07070':'var(--gold)'};`;
+      b.textContent = msg;
+      document.querySelector('.admin-wrap').prepend(b);
+    }
+
+    function renderStats(rsvps) {
+      const total     = GUEST_LIST.length;
+      const responded = Object.keys(rsvps).length;
+      const pending   = total - responded;
+
+      // Per-event attending counts
+      const eventStats = {};
+      Object.values(WEDDING_EVENTS).forEach(ev => { eventStats[ev.id] = 0; });
+      Object.values(rsvps).forEach(sub => {
+        Object.entries(sub.events || {}).forEach(([evId, data]) => {
+          if (data.attending) eventStats[evId] = (eventStats[evId] || 0) + 1;
+        });
+      });
+
+      const cards = [
+        { n: total,     label: 'Total Invited' },
+        { n: responded, label: 'Responded' },
+        { n: pending,   label: 'Awaiting Response' },
+        ...Object.values(WEDDING_EVENTS).map(ev => ({ n: eventStats[ev.id] || 0, label: `Attending ${ev.label.split(' ')[0] === 'Wedding' ? ev.label.replace('Wedding ','') : ev.label}` })),
+      ];
+
+      document.getElementById('statCards').innerHTML = cards.map(c => `
+        <div class="col-6 col-md-3 col-lg-2">
+          <div class="stat-card">
+            <div class="stat-number">${c.n}</div>
+            <div class="stat-label">${c.label}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    function renderTabs(rsvps) {
+      const tabs   = ['All Guests', 'Not Responded', ...Object.values(WEDDING_EVENTS).map(e => e.label)];
+      const tabIds = ['all', 'pending', ...Object.keys(WEDDING_EVENTS)];
+
+      document.getElementById('adminTabs').innerHTML = tabs.map((t, i) =>
+        `<button class="admin-tab${i===0?' active':''}" data-tab="${tabIds[i]}">${t}</button>`
+      ).join('');
+
+      document.getElementById('tabPanels').innerHTML = tabIds.map((id, i) =>
+        `<div class="tab-panel${i===0?' active':''}" id="panel-${id}"></div>`
+      ).join('');
+
+      // Fill panels
+      renderAllGuests(rsvps);
+      renderPending(rsvps);
+      Object.keys(WEDDING_EVENTS).forEach(evId => renderEventPanel(evId, rsvps));
+
+      // Tab switching
+      document.getElementById('adminTabs').addEventListener('click', e => {
+        const btn = e.target.closest('.admin-tab');
+        if (!btn) return;
+        document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    }
+
+    // ---------- Tab: All Guests ----------
+    function renderAllGuests(rsvps) {
+      const evIds = Object.keys(WEDDING_EVENTS);
+      const rows = GUEST_LIST.map(guest => {
+        const sub = rsvps[guest.id];
+        const evCells = evIds.map(evId => {
+          if (!guest.events.includes(evId)) return `<td style="color:rgba(245,243,239,.2);text-align:center;">—</td>`;
+          if (!sub) return `<td><span class="badge-pending">Pending</span></td>`;
+          const ev = sub.events?.[evId];
+          if (!ev) return `<td><span class="badge-pending">Pending</span></td>`;
+          return `<td>${ev.attending ? '<span class="badge-yes">Attending</span>' : '<span class="badge-no">Declined</span>'}</td>`;
+        }).join('');
+
+        const submittedAt = sub?.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+        const plusOne = sub?.plusOneName ? `<br/><span style="font-size:.72rem;color:var(--gold);">+${sub.plusOneName}</span>` : '';
+        const dietary = sub?.dietary ? `<span title="${sub.dietary}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋 Notes</span>` : '';
+
+        return `<tr>
+          <td><strong>${guest.name}</strong>${plusOne}</td>
+          ${evCells}
+          <td style="font-size:.72rem;color:var(--ivory);">${submittedAt}</td>
+          <td>${dietary}</td>
+          <td><button class="btn-delete" data-guest-id="${guest.id}" ${!sub?'disabled style="opacity:.3"':''}>Remove</button></td>
+        </tr>`;
+      }).join('');
+
+      const evHeaders = evIds.map(id => `<th>${WEDDING_EVENTS[id].label.replace('Wedding ','').replace('Ceremony & Reception','Ceremony')}</th>`).join('');
+
+      document.getElementById('panel-all').innerHTML = `
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Guest</th>${evHeaders}<th>Submitted</th><th>Notes</th><th></th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+
+      document.getElementById('panel-all').querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => deleteRsvp(parseInt(btn.dataset.guestId, 10)));
+      });
+    }
+
+    // ---------- Tab: Not Responded ----------
+    function renderPending(rsvps) {
+      const pending = GUEST_LIST.filter(g => !rsvps[g.id]);
+      if (!pending.length) {
+        document.getElementById('panel-pending').innerHTML = `
+          <p style="color:var(--gold);font-size:.85rem;text-align:center;padding:3rem 0;">
+            ✦ &nbsp; Everyone has responded — wonderful!
+          </p>`;
+        return;
+      }
+      const rows = pending.map(g => `
+        <tr>
+          <td><strong>${g.name}</strong></td>
+          <td style="font-size:.72rem;color:var(--ivory);">${g.events.map(id => WEDDING_EVENTS[id]?.label || id).join(', ')}</td>
+        </tr>`).join('');
+
+      document.getElementById('panel-pending').innerHTML = `
+        <p style="font-size:.75rem;color:var(--ivory);margin-bottom:1.25rem;">${pending.length} guest${pending.length!==1?'s':''} haven't responded yet.</p>
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead><tr><th>Guest</th><th>Invited To</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // ---------- Tab: Per-event ----------
+    function renderEventPanel(evId, rsvps) {
+      const ev = WEDDING_EVENTS[evId];
+      const invited = GUEST_LIST.filter(g => g.events.includes(evId));
+      const attending = [];
+      const declined  = [];
+      const pending   = [];
+
+      invited.forEach(g => {
+        const sub = rsvps[g.id];
+        const evData = sub?.events?.[evId];
+        if (!sub || !evData)    pending.push(g);
+        else if (evData.attending) attending.push({ guest: g, sub });
+        else                       declined.push({ guest: g, sub });
+      });
+
+      const makeRows = (list, showMeal) => list.map(({ guest, sub }) => {
+        const meal = sub.events?.[evId]?.meal || '—';
+        const plusOne = sub.plusOneName ? ` <span style="font-size:.72rem;color:var(--gold);">(+${sub.plusOneName})</span>` : '';
+        const dietary = sub.dietary ? `<span title="${sub.dietary}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋</span>` : '';
+        return `<tr>
+          <td><strong>${guest.name}</strong>${plusOne}</td>
+          ${showMeal ? `<td style="font-size:.75rem;">${meal}</td>` : ''}
+          <td>${dietary}</td>
+        </tr>`;
+      }).join('');
+
+      const hasMeals = ev.mealChoices && ev.mealChoices.length > 0;
+      const mealHeader = hasMeals ? '<th>Meal</th>' : '';
+
+      // Meal count summary
+      let mealSummary = '';
+      if (hasMeals && attending.length) {
+        const counts = {};
+        attending.forEach(({ sub }) => {
+          const m = sub.events?.[evId]?.meal || 'No preference';
+          counts[m] = (counts[m] || 0) + 1;
+        });
+        mealSummary = `
+          <div style="margin-bottom:2rem;">
+            <span class="admin-section-title">Meal Counts</span>
+            <div class="d-flex flex-wrap gap-3">
+              ${Object.entries(counts).map(([m,c]) => `
+                <div class="stat-card" style="padding:1rem 1.5rem;min-width:120px;">
+                  <div class="stat-number" style="font-size:2rem;">${c}</div>
+                  <div class="stat-label">${m}</div>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }
+
+      document.getElementById(`panel-${evId}`).innerHTML = `
+        <div class="row g-3 mb-4">
+          <div class="col-4"><div class="stat-card"><div class="stat-number">${invited.length}</div><div class="stat-label">Invited</div></div></div>
+          <div class="col-4"><div class="stat-card"><div class="stat-number" style="color:var(--gold);">${attending.length}</div><div class="stat-label">Attending</div></div></div>
+          <div class="col-4"><div class="stat-card"><div class="stat-number" style="color:rgba(245,243,239,.4);">${pending.length}</div><div class="stat-label">Pending</div></div></div>
+        </div>
+
+        ${mealSummary}
+
+        ${attending.length ? `
+          <span class="admin-section-title">Attending (${attending.length})</span>
+          <div class="table-scroll mb-4">
+            <table class="admin-table">
+              <thead><tr><th>Guest</th>${mealHeader}<th></th></tr></thead>
+              <tbody>${makeRows(attending, hasMeals)}</tbody>
+            </table>
+          </div>` : ''}
+
+        ${declined.length ? `
+          <span class="admin-section-title">Declined (${declined.length})</span>
+          <div class="table-scroll mb-4">
+            <table class="admin-table" style="opacity:.6;">
+              <thead><tr><th>Guest</th>${mealHeader}<th></th></tr></thead>
+              <tbody>${makeRows(declined, hasMeals)}</tbody>
+            </table>
+          </div>` : ''}
+
+        ${pending.length ? `
+          <span class="admin-section-title">No Response Yet (${pending.length})</span>
+          <div class="table-scroll">
+            <table class="admin-table" style="opacity:.5;">
+              <thead><tr><th>Guest</th></tr></thead>
+              <tbody>${pending.map(g=>`<tr><td>${g.name}</td></tr>`).join('')}</tbody>
+            </table>
+          </div>` : ''}`;
+    }
+
+    // ---------- Delete single RSVP ----------
+    function deleteRsvp(guestId) {
+      const guest = GUEST_LIST.find(g => g.id === guestId);
+      if (!confirm(`Remove RSVP for ${guest?.name}? This cannot be undone.`)) return;
+      const all = loadRsvps();
+      delete all[guestId];
+      saveRsvps(all);
+      renderDashboard();
+    }
+
+    // ---------- Clear all ----------
+    document.getElementById('clearAllBtn').addEventListener('click', () => {
+      if (!confirm('Delete ALL RSVP responses? This cannot be undone.')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      renderDashboard();
+    });
+
+    // ---------- CSV Export ----------
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const rsvps  = loadRsvps();
+      const evIds  = Object.keys(WEDDING_EVENTS);
+      const header = ['Guest Name', 'Plus One', ...evIds.map(id => WEDDING_EVENTS[id].label), ...evIds.map(id => `${WEDDING_EVENTS[id].label} - Meal`), 'Dietary Notes', 'Submitted At'];
+
+      const rows = GUEST_LIST.map(guest => {
+        const sub = rsvps[guest.id];
+        const evAttend = evIds.map(id => {
+          if (!guest.events.includes(id)) return 'N/A';
+          if (!sub?.events?.[id]) return 'Pending';
+          return sub.events[id].attending ? 'Yes' : 'No';
+        });
+        const evMeals = evIds.map(id => {
+          if (!guest.events.includes(id)) return 'N/A';
+          return sub?.events?.[id]?.meal || '';
+        });
+        return [
+          `"${guest.name}"`,
+          `"${sub?.plusOneName || ''}"`,
+          ...evAttend.map(v => `"${v}"`),
+          ...evMeals.map(v => `"${v}"`),
+          `"${sub?.dietary || ''}"`,
+          `"${sub?.submittedAt ? new Date(sub.submittedAt).toLocaleString() : ''}"`,
+        ].join(',');
+      });
+
+      const csv = [header.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'rsvp-responses.csv';
+      a.click();
+    });
+  })();
+  </script>
+</body>
+</html>

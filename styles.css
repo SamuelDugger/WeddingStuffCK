@@ -1,0 +1,674 @@
+/* =====================================================
+   MODERN CONTRAST – BLACK  |  Cheyhoma & Kody Wedding
+   ===================================================== */
+
+/* ---------- Tokens ---------- */
+:root {
+  --black:   #0a0a0a;
+  --white:   #f5f3ef;
+  --ivory:   #e8e0d0;
+  --gold:    #c9a96e;
+  --mid:     #1a1a1a;
+  --rule:    rgba(201,169,110,.35);
+  --font-serif:  'Cormorant Garamond', Georgia, serif;
+  --font-sans:   'Montserrat', sans-serif;
+  --font-script: 'Parisienne', cursive;
+}
+
+/* ---------- Reset / Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; text-decoration: none; }
+
+/* ---------- Shared Typography ---------- */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  letter-spacing: .04em;
+  line-height: 1.15;
+}
+
+.script { font-family: var(--font-script); font-weight: 400; }
+
+.section-eyebrow {
+  font-family: var(--font-sans);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: .75rem;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 300;
+  color: var(--white);
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.ornament::before, .ornament::after {
+  content: '';
+  flex: 1;
+  max-width: 80px;
+  height: 1px;
+  background: var(--rule);
+}
+.ornament-diamond {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* ---------- Navigation ---------- */
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--black);
+  border-bottom: 1px solid var(--rule);
+  transition: background .3s;
+}
+
+/* monogram in center between nav groups on large screens */
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-monogram {
+  font-family: var(--font-script);
+  font-size: 1.6rem;
+  color: var(--white);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  padding: .25rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* hamburger */
+.nav-toggler {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.nav-toggler span {
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--white);
+  transition: transform .3s, opacity .3s;
+}
+
+/* mobile drawer */
+.nav-drawer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 1rem 2.5rem;
+  border-top: 1px solid var(--rule);
+  background: var(--black);
+}
+.nav-drawer.open { display: flex; }
+.nav-drawer a {
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  transition: color .2s;
+}
+.nav-drawer a:hover { color: var(--gold); }
+.nav-drawer a.active {
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 2px;
+}
+
+/* ---------- Page wrapper (push content below fixed nav) ---------- */
+.page-wrap { padding-top: 62px; }
+
+/* ---------- Hero Section (index.html) ---------- */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 1.5rem 4rem;
+  background: var(--black);
+}
+
+/* optional: if you add a hero background image, uncomment:
+.hero {
+  background-image: url('img/hero.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.hero::after {
+  content:''; position:absolute; inset:0;
+  background: rgba(0,0,0,.55);
+}
+.hero > * { position: relative; z-index: 1; }
+*/
+
+.hero-pretext {
+  font-size: .65rem;
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+}
+
+.hero-we-do {
+  font-family: var(--font-serif);
+  font-size: clamp(5rem, 18vw, 14rem);
+  font-weight: 300;
+  letter-spacing: .08em;
+  line-height: .95;
+  color: var(--white);
+  margin-bottom: .25rem;
+}
+
+.hero-script {
+  font-family: var(--font-script);
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  color: var(--gold);
+  margin-bottom: 1.75rem;
+}
+
+.hero-names {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 5vw, 3.4rem);
+  font-weight: 300;
+  letter-spacing: .05em;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.hero-details {
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  line-height: 2;
+}
+
+.hero-countdown {
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.hero-divider {
+  width: 1px;
+  height: 60px;
+  background: var(--rule);
+  margin: 2rem auto 0;
+}
+
+/* Hero ornament needs an explicit width because the hero is a flex column
+   with align-items:center, which collapses the ornament to content-width
+   and leaves no space for the ::before/::after lines to grow into. */
+.hero .ornament { width: 220px; }
+
+/* ---------- Story Timeline ---------- */
+/* Override the inline width:50% so both sides share space equally */
+#timeline > .col-12.d-flex > div:first-child {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0;
+}
+#timeline > .col-12.d-flex > div:last-child {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0;
+}
+/* Keep the connector from stretching */
+#timeline > .col-12.d-flex > div:nth-child(2) {
+  flex-shrink: 0;
+}
+
+/* ---------- Page Hero (inner pages) ---------- */
+.page-hero {
+  padding: 5rem 1.5rem 4rem;
+  text-align: center;
+  border-bottom: 1px solid var(--rule);
+}
+
+.page-hero-title {
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  font-weight: 300;
+  letter-spacing: .06em;
+}
+
+/* ---------- Content Sections ---------- */
+.content-section {
+  padding: 5rem 1.5rem;
+}
+
+.content-section + .content-section {
+  border-top: 1px solid var(--rule);
+}
+
+.narrow { max-width: 680px; margin: 0 auto; }
+.medium { max-width: 900px; margin: 0 auto; }
+.wide   { max-width: 1100px; margin: 0 auto; }
+
+/* ---------- Bordered / Contrast Blocks ---------- */
+.block-bordered {
+  border: 1px solid var(--rule);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.block-dark {
+  background: var(--mid);
+  padding: 2.5rem 2rem;
+}
+
+/* ---------- Buttons ---------- */
+.btn-wedding {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--white);
+  border: 1px solid var(--white);
+  padding: .9rem 2.8rem;
+  transition: background .25s, color .25s;
+}
+.btn-wedding:hover {
+  background: var(--white);
+  color: var(--black);
+}
+
+.btn-wedding-gold {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-wedding-gold:hover {
+  background: var(--gold);
+  color: var(--black);
+}
+
+/* ---------- Story Section ---------- */
+.story-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--ivory);
+}
+
+/* ---------- Wedding Details Cards ---------- */
+.details-card {
+  border: 1px solid var(--rule);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  height: 100%;
+  transition: border-color .3s;
+}
+.details-card:hover { border-color: var(--gold); }
+
+.details-card-icon {
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.details-card h3 {
+  font-size: 1.1rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  margin-bottom: .75rem;
+}
+
+.details-card p, .details-card address {
+  font-style: normal;
+  font-size: .85rem;
+  color: var(--ivory);
+  line-height: 1.8;
+}
+
+/* ---------- Photo Grid ---------- */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 4px;
+}
+
+.photo-tile {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--mid);
+  position: relative;
+}
+
+.photo-tile img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+  filter: grayscale(20%);
+}
+
+.photo-tile:hover img { transform: scale(1.05); filter: grayscale(0%); }
+
+/* placeholder when no image */
+.photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-script);
+  font-size: 1.5rem;
+  color: var(--rule);
+}
+
+/* ---------- Wedding Party ---------- */
+.party-card {
+  text-align: center;
+  padding: 1rem;
+}
+
+.party-card-img {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1.25rem;
+  border: 1px solid var(--rule);
+  background: var(--mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.party-card-img-placeholder {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: var(--mid);
+  border: 1px solid var(--rule);
+  margin: 0 auto 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+.party-card h4 {
+  font-size: 1.1rem;
+  letter-spacing: .04em;
+  margin-bottom: .25rem;
+}
+
+.party-card p {
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ---------- Q&A Accordion ---------- */
+.qa-item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.qa-question {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  text-align: left;
+  padding: 1.4rem 2.5rem 1.4rem 0;
+  position: relative;
+  cursor: pointer;
+  letter-spacing: .02em;
+}
+
+.qa-question::after {
+  content: '+';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--gold);
+  transition: transform .3s;
+}
+
+.qa-question.open::after {
+  content: '−';
+}
+
+.qa-answer {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .35s ease, padding .35s;
+}
+
+.qa-answer.open {
+  max-height: 400px;
+  padding-bottom: 1.4rem;
+}
+
+.qa-answer p {
+  font-size: .88rem;
+  color: var(--ivory);
+  line-height: 1.9;
+}
+
+/* ---------- Travel Cards ---------- */
+.travel-card {
+  background: var(--mid);
+  border: 1px solid var(--rule);
+  padding: 2rem 1.75rem;
+  height: 100%;
+}
+
+.travel-card h3 {
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: .75rem;
+}
+
+.travel-card h4 {
+  font-size: 1.25rem;
+  margin-bottom: .5rem;
+}
+
+.travel-card p {
+  font-size: .85rem;
+  color: var(--ivory);
+  line-height: 1.8;
+}
+
+.travel-card .btn-wedding {
+  margin-top: 1.25rem;
+  font-size: .6rem;
+  padding: .7rem 2rem;
+}
+
+/* ---------- Registry ---------- */
+.registry-card {
+  border: 1px solid var(--rule);
+  padding: 3rem 2rem;
+  text-align: center;
+  height: 100%;
+  transition: border-color .3s, transform .3s;
+}
+.registry-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+}
+
+.registry-card h3 {
+  font-size: 1.4rem;
+  letter-spacing: .04em;
+  margin-bottom: .5rem;
+}
+
+.registry-card p {
+  font-size: .83rem;
+  color: var(--ivory);
+  margin-bottom: 1.5rem;
+}
+
+/* ---------- Dress Code Swatch ---------- */
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+}
+
+.swatch-circle {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+}
+
+.swatch-label {
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ivory);
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.site-footer .monogram {
+  font-family: var(--font-script);
+  font-size: 2.5rem;
+  color: var(--white);
+  display: block;
+  margin-bottom: .5rem;
+}
+
+.site-footer p {
+  font-size: .65rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ---------- Responsive overrides ---------- */
+@media (max-width: 991.98px) {
+  .nav-desktop { display: none !important; }
+  .nav-toggler  { display: flex; }
+}
+
+@media (min-width: 992px) {
+  .nav-toggler  { display: none !important; }
+  .nav-desktop  { display: flex !important; }
+  .nav-drawer   { display: none !important; }
+}
+
+@media (max-width: 575.98px) {
+  .hero-we-do { letter-spacing: .04em; }
+  .content-section { padding: 3.5rem 1.25rem; }
+  .block-bordered { padding: 2rem 1.25rem; }
+  .party-card-img, .party-card-img-placeholder { width: 140px; height: 140px; }
+
+  /* Photo grid: always 2 columns on mobile so the feature span works */
+  .photo-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .photo-tile-feature {
+    grid-column: span 2 !important;
+    grid-row: span 1 !important;
+  }
+  .photo-tile-feature .photo-placeholder {
+    height: 220px !important;
+  }
+
+}
