@@ -35,6 +35,7 @@
       border: 1px solid var(--rule);
       padding: 1.5rem;
       text-align: center;
+      height: 100%;
     }
     .stat-number {
       font-family: var(--font-serif);
@@ -160,6 +161,42 @@
       color: var(--gold);
     }
 
+    /* Shared attend-btn style (matches rsvp.html) */
+    .attend-btn {
+      background: none;
+      border: 1px solid var(--rule);
+      color: var(--ivory);
+      font-family: var(--font-sans);
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .5rem 1.2rem;
+      min-width: 160px;
+      text-align: center;
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .attend-btn.yes.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--black);
+    }
+    .attend-btn.no.active {
+      background: var(--white);
+      border-color: var(--white);
+      color: var(--black);
+    }
+    .attend-btn.danger {
+      border-color: rgba(224,112,112,.5);
+      color: rgba(224,112,112,.8);
+    }
+    .attend-btn.danger:hover {
+      background: rgba(224,112,112,.1);
+      color: #e07070;
+    }
+
     /* Delete button */
     .btn-delete {
       background: none;
@@ -202,7 +239,7 @@
         <label class="rsvp-label" for="adminPass" style="font-family:var(--font-sans);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.45rem;">Password</label>
         <input id="adminPass" class="admin-input" type="password" placeholder="Enter admin password" style="width:100%;" />
         <p id="loginError" style="color:#e07070;font-size:.75rem;margin-top:.5rem;display:none;">Incorrect password.</p>
-        <button id="loginBtn" class="btn-wedding btn-wedding-gold" style="width:100%;margin-top:1rem;font-size:.62rem;">Enter</button>
+        <button id="loginBtn" class="attend-btn yes active" style="width:100%;margin-top:1rem;">Enter</button>
       </div>
     </div>
 
@@ -217,9 +254,9 @@
             <h2 class="section-title" style="font-size:1.8rem;">RSVP Overview</h2>
           </div>
           <div class="d-flex gap-2 flex-wrap">
-            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;" id="exportCsvBtn">Export CSV</button>
-            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;border-color:rgba(224,112,112,.5);color:rgba(224,112,112,.8);" id="clearAllBtn">Clear All RSVPs</button>
-            <button class="btn-wedding" style="font-size:.58rem;padding:.6rem 1.4rem;" id="logoutBtn">Log Out</button>
+            <button class="attend-btn" id="exportCsvBtn">Export CSV</button>
+            <button class="attend-btn danger" id="clearAllBtn">Clear All RSVPs</button>
+            <button class="attend-btn" id="logoutBtn">Log Out</button>
           </div>
         </div>
 
@@ -297,23 +334,28 @@
       renderTabs(rsvps);
     }
 
-    // Fetch from Google Sheets if URL is set, otherwise fall back to localStorage
+    // Fetch from Google Sheets if URL is set, otherwise fall back to localStorage.
+    // NOTE: requires the site to be served from https:// (e.g. Netlify, GitHub Pages).
+    // Opening admin.html as a local file:// blocks this fetch — host the files first.
     async function fetchAllRsvps() {
       if (typeof APPS_SCRIPT_URL !== 'undefined' && APPS_SCRIPT_URL) {
         try {
           const res  = await fetch(APPS_SCRIPT_URL + '?action=getAll');
           const data = await res.json();
-          // Also merge in any localStorage entries the sheet might have missed
-          // (e.g. a submission that failed to reach the network)
+
+          if (data && data.error) {
+            showBanner('Google Sheets error: ' + data.error, 'warn');
+            return loadLocalRsvps();
+          }
+
           const local = loadLocalRsvps();
           return Object.assign({}, local, data);
-        } catch {
-          // Network error — fall back to localStorage with a warning
+        } catch (err) {
+          console.error('Could not reach Google Sheets:', err);
           showBanner('Could not reach Google Sheets — showing locally cached responses only.', 'warn');
           return loadLocalRsvps();
         }
       }
-      // No URL configured — localStorage only
       return loadLocalRsvps();
     }
 
@@ -553,9 +595,22 @@
     }
 
     // ---------- Clear all ----------
-    document.getElementById('clearAllBtn').addEventListener('click', () => {
-      if (!confirm('Delete ALL RSVP responses? This cannot be undone.')) return;
+    document.getElementById('clearAllBtn').addEventListener('click', async () => {
+      if (!confirm('Delete ALL RSVP responses from the sheet AND local cache? This cannot be undone.')) return;
+
+      // Clear localStorage cache
       localStorage.removeItem(STORAGE_KEY);
+
+      // Clear Google Sheet if URL is configured
+      if (typeof APPS_SCRIPT_URL !== 'undefined' && APPS_SCRIPT_URL) {
+        try {
+          await fetch(APPS_SCRIPT_URL + '?action=clearAll');
+          showBanner('All responses cleared from Google Sheet and local cache.', 'gold');
+        } catch {
+          showBanner('Local cache cleared, but could not reach Google Sheet — delete rows manually if needed.', 'warn');
+        }
+      }
+
       renderDashboard();
     });
 
