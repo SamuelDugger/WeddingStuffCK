@@ -222,7 +222,10 @@
         slides.forEach((_, i) => {
           const d = document.createElement("button");
           d.className = i === 0 ? "ck-dot active" : "ck-dot";
-          d.addEventListener("click", () => goTo(i));
+          d.addEventListener("click", () => {
+            goTo(i);
+            restartTimer();
+          });
           dotsEl.appendChild(d);
         });
 
@@ -244,12 +247,20 @@
           timer = setInterval(advance, INTERVAL);
         }
 
-        // Prev / next buttons
+        function restartTimer() {
+          clearInterval(timer);
+          timer = null;
+          startTimer();
+        }
+
+        // Prev / next buttons — clicking either one resets the auto-advance countdown
         section.querySelector(".ck-prev").addEventListener("click", () => {
           goTo(current - 1);
+          restartTimer();
         });
         section.querySelector(".ck-next").addEventListener("click", () => {
           goTo(current + 1);
+          restartTimer();
         });
 
         // Start autoplay only once the full carousel is visible

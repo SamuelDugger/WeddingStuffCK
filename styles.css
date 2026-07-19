@@ -186,8 +186,8 @@ h1, h2, h3, h4, h5 {
 #photoCarousel {
   position: relative;
   background: var(--mid);
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
+  border-top: 2px solid var(--rule);
+  border-bottom: 2px solid var(--rule);
   overflow: hidden;
 }
 
@@ -472,6 +472,7 @@ h1, h2, h3, h4, h5 {
    Example: <img class="ck-img zoom-out" ...> */
 .zoom-out {
   object-fit: contain;
+  object-position: center;
   background: var(--black);
 }
 
