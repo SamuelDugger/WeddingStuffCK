@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <style>
     .lightbox-overlay {
       display: none;
@@ -30,6 +31,20 @@
       color: var(--white); font-size: 2rem;
       cursor: pointer; line-height: 1;
     }
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--gold); font-size: 3rem; font-weight: 300;
+      cursor: pointer; line-height: 1;
+      padding: 0 1.5rem;
+      transition: color .2s;
+    }
+    .lightbox-prev { left: .5rem; }
+    .lightbox-next { right: .5rem; }
+    .lightbox-prev:hover,
+    .lightbox-next:hover { color: var(--white); }
   </style>
 </head>
 <body>
@@ -48,26 +63,59 @@
           <h2 class="section-title">Our Gallery</h2>
         </div>
 
-        <!-- Photo grid — replace photo-placeholder divs with <img> tags when you have photos -->
+        <!-- Photo grid — one .photo-tile per photo. Tiles are square (1:1) and crop
+             each image to fill via object-fit: cover, so photos of any size or
+             orientation line up cleanly. To add more: copy a .photo-tile block. -->
         <div class="photo-grid">
-          <!-- Tile 1 - large feature -->
-          <div class="photo-tile photo-tile-feature" style="grid-column: span 2; grid-row: span 2; aspect-ratio: auto;">
-            <div class="photo-placeholder" style="height:460px;">C &amp; K</div>
+          <div class="photo-tile">
+            <img src="Images/Photos/06f5b8e2-d122-42f0-8fb2-80f4b975eff6~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" class="focus-top" />
           </div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
-          <div class="photo-tile"><div class="photo-placeholder">♡</div></div>
+          <div class="photo-tile"><img src="Images/Photos/0843075e-0ad4-499c-b64b-4901cbbdbcfc~rt_auto-cr_0.0.1242.1656-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/0b225847-7c07-4919-8d9e-1c8ca43b9c3c~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/0d6db5bd-f173-4e25-badb-61f8d8b6039d~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/1425a50f-143a-48f8-8668-41159cb89f96~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/19abf501-324d-4971-ac32-e8eaa46f9291~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/22234639-aa7d-4506-b172-a9d8e647b9c9~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/22c22017-417e-4c77-9419-7eb456f5e01f~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/338f241c-46ea-4f9f-986f-2cd9c7a89cb2~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/4102e7f0-5ab2-4a9e-837e-edd24bfc9d3a~rt_auto-cr_0.0.932.1241-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/427ae44a-a312-4701-b5e2-9c9d9f6096fc~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/45ba5864-b1fb-4ee3-ac8c-07e9fb764cea~rt_auto-cr_0.0.1669.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/52001a47-1f03-4356-beea-fc6ab2cea90c~rt_auto-cr_0.0.2500.1875-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/5226c960-cfa9-4064-8e7f-cb4042188e18~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/58a83386-978f-42fb-9d03-1d3322d1915c~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/5f32d5e3-3bbd-4485-addf-3937815fc1f0~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/617ac9cb-3fe5-4b84-830c-c1579c2c1197~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/6565d7af-c7bf-4a32-8fe5-98b17f79eee1~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/7259dac7-ffa9-4f0f-972c-7fb370521144~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/7467d238-ad4d-46cc-b4bb-d13ba4a8a854~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/811cc904-7e70-46c5-bac7-54b5f13ba472~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/81b616d0-a64f-4be7-8f75-2ecee83295c5~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/8435ba41-25c9-4e22-a33d-36a49bc43a64~rt_auto-cr_0.0.1320.2300-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/8451faae-056e-4804-b621-d04cb854f6f0~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/8ae4e71a-3ef5-4fb0-ab99-39743f88cc3e~rt_auto-cr_0.0.1020.1020-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/92b2ed95-a2fa-4897-af33-cc4c39367d8d~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/9376aa78-a715-49a2-b2f5-78c35b50f25d~rt_auto-cr_0.0.2500.1875-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/96a1ddba-9c4e-4f7c-8ac7-3c78fd88310e~rt_auto-cr_44.0.1214.1560-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/a61bd395-f709-4efa-9b33-fb5df014a1fc~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/a650fec8-ccf1-487e-8005-8d897a5d705d~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/a9929178-45a4-47e3-be47-051ec10cf5ea~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/b272d3f7-845b-43a7-95a3-e0b10a55d97b~rt_auto-cr_138.0.1220.1443-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/b2b92f6e-e79d-47a1-8afe-55ac70edf198~rt_auto-cr_0.0.1668.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/b61c335d-1115-4251-9986-05e2b12d2302~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/c31052d4-dd37-40d4-927a-c696e0c3ee9d~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/cbf1b7f4-b6e9-4b4a-8519-eaad5cdbed58~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/ce8765ce-b8f3-4843-a1fd-7aa40313d63b~rt_auto-cr_0.0.2500.2100-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/d0ce4170-ba38-407b-bceb-518866ef129d~rt_auto-cr_413.0.1744.1775-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/e01110bd-f890-42de-8fe6-d3745843a4fb~rt_auto-cr_0.0.1536.2048-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/e1ff23d6-0f12-464f-aba5-835630003cc0~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/e33d116b-151e-4a62-9e1f-d4af65e8eec6~rt_auto-cr_0.0.2500.1875-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/f4455f30-ae96-4144-8c76-34d09f0a242f~rt_auto-cr_369.75.1669.1808-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/f9affa9f-0377-47fb-95d4-45f65c41e072~rt_auto-cr_0.0.1242.2208-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/fa6e15cc-abf7-4846-b4ae-d7daf1bc5410~rt_auto-cr_0.0.2500.1875-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/fbdb541b-8632-470f-b560-9f42df6b878e~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
+          <div class="photo-tile"><img src="Images/Photos/fe28e473-f4d8-4de0-afe7-7462da6f6b2c~rt_auto-cr_0.0.1875.2500-rs_1700.jpg" alt="Cheyhoma and Kody" loading="lazy" /></div>
         </div>
-
-        <p class="text-center mt-5" style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);">
-          More photos coming soon
-        </p>
       </div>
     </section>
 
@@ -76,26 +124,45 @@
   <!-- Lightbox -->
   <div class="lightbox-overlay" id="lightbox">
     <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
     <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+    <button class="lightbox-next" id="lightboxNext" aria-label="Next">&#8250;</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="nav.js"></script>
   <script>
-    // Lightbox for real images
+    // Lightbox for real images — click a photo to enlarge, then use the
+    // arrows (or left/right keys) to step through the rest of the gallery.
     const lightbox = document.getElementById('lightbox');
     const lbImg    = document.getElementById('lightboxImg');
-    document.querySelectorAll('.photo-tile img').forEach(img => {
+    const photos   = Array.from(document.querySelectorAll('.photo-tile img'));
+    let currentIndex = 0;
+
+    function showPhoto(index) {
+      currentIndex = (index + photos.length) % photos.length;
+      lbImg.src = photos[currentIndex].src;
+      lbImg.alt = photos[currentIndex].alt;
+    }
+
+    photos.forEach((img, i) => {
       img.style.cursor = 'pointer';
       img.addEventListener('click', () => {
-        lbImg.src = img.src;
-        lbImg.alt = img.alt;
+        showPhoto(i);
         lightbox.classList.add('active');
       });
     });
+
     document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('active'));
+    document.getElementById('lightboxPrev').addEventListener('click', () => showPhoto(currentIndex - 1));
+    document.getElementById('lightboxNext').addEventListener('click', () => showPhoto(currentIndex + 1));
     lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('active'); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('active'); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') lightbox.classList.remove('active');
+      if (e.key === 'ArrowLeft') showPhoto(currentIndex - 1);
+      if (e.key === 'ArrowRight') showPhoto(currentIndex + 1);
+    });
   </script>
 </body>
 </html>

@@ -5,9 +5,9 @@
   --black:   #0a0a0a;
   --white:   #f5f3ef;
   --ivory:   #e8e0d0;
-  --gold:    #b03030;
+  --gold:    #c9a15a;
   --mid:     #1a1a1a;
-  --rule:    rgba(176,48,48,.35);
+  --rule:    rgba(122,36,38,.45);
   --font-serif:  'Cormorant Garamond', Georgia, serif;
   --font-sans:   'Montserrat', sans-serif;
   --font-script: 'Parisienne', cursive;
@@ -487,6 +487,8 @@ h1, h2, h3, h4, h5 {
   .tl-text { text-align: center !important; margin-top: 1rem; }
   .tl-spine { flex-direction: row; width: 100%; padding: 0.75rem 0; }
   .tl-line { flex: 1; height: 1px; width: auto; }
+  /* Collapse the hidden line so the diamond sits at the true edge instead of the middle */
+  .tl-line--hidden { flex: 0; }
 }
 
 /* Inner page hero banner */
@@ -859,13 +861,6 @@ h1, h2, h3, h4, h5 {
   
   .photo-grid {
     grid-template-columns: 1fr 1fr;
-  }
-  .photo-tile-feature {
-    grid-column: span 2 !important;
-    grid-row: span 1 !important;
-  }
-  .photo-tile-feature .photo-placeholder {
-    height: 220px !important;
   }
 
 }
