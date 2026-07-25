@@ -58,6 +58,10 @@
 
   const footerHTML = `
 <footer class="site-footer">
+  <svg class="footer-rings" viewBox="0 0 28 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="10" cy="9" r="7" />
+    <circle cx="18" cy="9" r="7" />
+  </svg>
   <span class="monogram">C &amp; K</span>
   <p>February 27, 2027 &bull; Newcastle, Oklahoma</p>
 </footer>`;

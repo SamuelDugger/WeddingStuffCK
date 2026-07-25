@@ -2,21 +2,39 @@
 
 /* Color & font variables used throughout the site */
 :root {
-  --black:   #0a0a0a;
-  --white:   #f5f3ef;
-  --ivory:   #e8e0d0;
-  --gold:    #c9a15a;
-  --mid:     #1a1a1a;
-  --rule:    rgba(122,36,38,.45);
-  --font-serif:  'Cormorant Garamond', Georgia, serif;
-  --font-sans:   'Montserrat', sans-serif;
-  --font-script: 'Parisienne', cursive;
+  --black: #141211;
+  --white: #f6f2ed;
+  --ivory: #e9dfcf;
+  --gold: #a24646;
+  --mid: #1a1a1a;
+  --rule: #8f3535;
+  /* Layered section backgrounds — cycle through these instead of repeating
+     one flat color, so scrolling feels like distinct panels, not one sheet */
+  --layer-1: #121212;
+  --layer-2: #161515;
+  --layer-3: #121212;
+  --layer-4: #181615;
+  /* Barely-there film grain, layered on top of any background-color below */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  /* Faint linen weave — a fine diagonal crosshatch, tiled small */
+  --linen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 0L6 6M6 0L0 6' stroke='%23e9dfcf' stroke-width='0.6' opacity='0.02'/%3E%3C/svg%3E");
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Montserrat", sans-serif;
+  --font-script: "Parisienne", cursive;
 }
 
 /* Reset / Base */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   background: var(--black);
@@ -28,36 +46,69 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-img { max-width: 100%; display: block; }
+/* Nav, footer, and hero banners — soft grain only, kept quiet so it doesn't
+   compete with the hero photo treatment or the compact nav bar */
+body,
+.page-hero,
+.site-nav,
+.nav-drawer,
+.site-footer {
+  background-image: var(--grain);
+  background-repeat: repeat;
+}
 
-a { color: inherit; text-decoration: none; }
+/* Content sections — linen weave + grain for a fabric-like feel.
+   !important because the layered panel colors below are set inline via the
+   `background` shorthand, which otherwise silently resets background-image.
+   Excludes the home hero, which already has its own photo/flourish treatment. */
+section:not(.hero) {
+  background-image: var(--linen), var(--grain) !important;
+  background-repeat: repeat, repeat;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
 /* Typography */
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: var(--font-serif);
   font-weight: 300;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   line-height: 1.15;
 }
 
-.script { font-family: var(--font-script); font-weight: 400; }
+.script {
+  font-family: var(--font-script);
+  font-weight: 400;
+}
 
 .section-eyebrow {
   font-family: var(--font-sans);
-  font-size: .68rem;
+  font-size: 0.68rem;
   font-weight: 500;
-  letter-spacing: .25em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ivory);
   display: block;
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
 .section-title {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 300;
-  color: var(--white);
+  color: var(--ivory);
 }
 
 .ornament {
@@ -67,36 +118,62 @@ h1, h2, h3, h4, h5 {
   justify-content: center;
   margin: 1.5rem 0;
 }
-.ornament::before, .ornament::after {
-  content: '';
+.ornament::before,
+.ornament::after {
+  content: "";
   flex: 1;
   max-width: 80px;
   height: 1px;
   background: var(--rule);
 }
 .ornament-diamond {
-  width: 6px; height: 6px;
+  position: relative;
+  width: 6px;
+  height: 6px;
   background: var(--gold);
   transform: rotate(45deg);
   flex-shrink: 0;
+}
+/* Tiny leaves flanking the diamond — a small botanical touch on every divider */
+.ornament-diamond::before,
+.ornament-diamond::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 5px;
+  background: var(--ivory);
+  opacity: 0.55;
+  border-radius: 0 100% 0 100%;
+}
+.ornament-diamond::before {
+  right: 100%;
+  margin-right: 4px;
+  transform: translateY(-50%) rotate(45deg);
+}
+.ornament-diamond::after {
+  left: 100%;
+  margin-left: 4px;
+  transform: translateY(-50%) rotate(-135deg);
 }
 
 /* Navigation */
 .site-nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   background: var(--black);
   border-bottom: 1px solid var(--rule);
-  transition: background .3s;
+  transition: background 0.3s;
 }
-
 
 .nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .9rem 2rem;
+  padding: 0.9rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -119,14 +196,16 @@ h1, h2, h3, h4, h5 {
 
 .nav-links a {
   font-family: var(--font-sans);
-  font-size: .65rem;
+  font-size: 0.65rem;
   font-weight: 500;
-  letter-spacing: .2em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ivory);
-  padding: .25rem 0;
+  padding: 0.25rem 0;
   border-bottom: 1px solid transparent;
-  transition: color .2s, border-color .2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .nav-links a:hover,
@@ -135,23 +214,24 @@ h1, h2, h3, h4, h5 {
   border-bottom-color: var(--gold);
 }
 
-
 .nav-toggler {
   background: none;
   border: none;
   cursor: pointer;
-  padding: .5rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 .nav-toggler span {
   display: block;
-  width: 24px; height: 1px;
+  width: 24px;
+  height: 1px;
   background: var(--white);
-  transition: transform .3s, opacity .3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
 }
-
 
 .nav-drawer {
   display: none;
@@ -162,17 +242,21 @@ h1, h2, h3, h4, h5 {
   border-top: 1px solid var(--rule);
   background: var(--black);
 }
-.nav-drawer.open { display: flex; }
+.nav-drawer.open {
+  display: flex;
+}
 .nav-drawer a {
   font-family: var(--font-sans);
-  font-size: .7rem;
+  font-size: 0.7rem;
   font-weight: 500;
-  letter-spacing: .22em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ivory);
-  transition: color .2s;
+  transition: color 0.2s;
 }
-.nav-drawer a:hover { color: var(--gold); }
+.nav-drawer a:hover {
+  color: var(--gold);
+}
 .nav-drawer a.active {
   color: var(--gold);
   border-bottom: 1px solid var(--gold);
@@ -180,7 +264,9 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Pushes page content below the fixed nav bar */
-.page-wrap { padding-top: 62px; }
+.page-wrap {
+  padding-top: 62px;
+}
 
 /* Photo carousel (home page, below hero) */
 #photoCarousel {
@@ -248,10 +334,17 @@ h1, h2, h3, h4, h5 {
   z-index: 10;
   transition: color 0.2s;
 }
-.ck-prev { left: 0; }
-.ck-next { right: 0; }
+.ck-prev {
+  left: 0;
+}
+.ck-next {
+  right: 0;
+}
 .ck-prev:hover,
-.ck-next:hover { color: var(--white); cursor: pointer; }
+.ck-next:hover {
+  color: var(--white);
+  cursor: pointer;
+}
 
 .ck-dots {
   position: absolute;
@@ -273,7 +366,9 @@ h1, h2, h3, h4, h5 {
   padding: 0;
   transition: background 0.2s;
 }
-.ck-dot.active { background: var(--gold); }
+.ck-dot.active {
+  background: var(--gold);
+}
 
 /* Home page hero */
 .hero {
@@ -289,14 +384,62 @@ h1, h2, h3, h4, h5 {
   background: var(--black);
 }
 
-/* To add a background photo: set background-image on .hero, add a dark overlay with .hero::after, and set position:relative;z-index:1 on .hero > * */
+/* Faint blurred engagement photo behind the title — same treatment as the
+   secondary-page heroes, heavily blurred and desaturated for mood only */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  background: url("Images/Home/9376aa78-a715-49a2-b2f5-78c35b50f25d~rt_auto-cr_0.0.2500.1875-rs_1700.jpg")
+    center / cover;
+  filter: blur(30px) saturate(0.7) brightness(0.6);
+  opacity: 0.22;
+  z-index: 0;
+}
+
+/* Thin botanical corner flourishes + soft vignette + warm center glow */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23e9dfcf' stroke-width='1' opacity='0.5'%3E%3Cpath d='M8 40 Q8 8 40 8'/%3E%3Cpath d='M18 30 Q22 20 32 18'/%3E%3Ccircle cx='40' cy='8' r='2' fill='%23e9dfcf' stroke='none'/%3E%3Ccircle cx='8' cy='40' r='2' fill='%23e9dfcf' stroke='none'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23e9dfcf' stroke-width='1' opacity='0.5' transform='rotate(180 45 45)'%3E%3Cpath d='M8 40 Q8 8 40 8'/%3E%3Cpath d='M18 30 Q22 20 32 18'/%3E%3Ccircle cx='40' cy='8' r='2' fill='%23e9dfcf' stroke='none'/%3E%3Ccircle cx='8' cy='40' r='2' fill='%23e9dfcf' stroke='none'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.03),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 35%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position:
+    top 18px left 18px,
+    bottom 18px right 18px,
+    center,
+    center;
+  background-size:
+    64px 64px,
+    64px 64px,
+    cover,
+    cover;
+  z-index: 1;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 2;
+}
 
 .hero-pretext {
-  font-size: .65rem;
+  font-size: 0.65rem;
   font-weight: 500;
-  letter-spacing: .3em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ivory);
   margin-bottom: 1.25rem;
 }
 
@@ -304,16 +447,16 @@ h1, h2, h3, h4, h5 {
   font-family: var(--font-serif);
   font-size: clamp(5rem, 18vw, 14rem);
   font-weight: 300;
-  letter-spacing: .08em;
-  line-height: .95;
+  letter-spacing: 0.08em;
+  line-height: 0.95;
   color: var(--white);
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
 }
 
 .hero-script {
   font-family: var(--font-script);
   font-size: clamp(1.4rem, 4vw, 2.4rem);
-  color: var(--gold);
+  color: var(--ivory);
   margin-bottom: 1.75rem;
 }
 
@@ -321,15 +464,15 @@ h1, h2, h3, h4, h5 {
   font-family: var(--font-serif);
   font-size: clamp(1.6rem, 5vw, 3.4rem);
   font-weight: 300;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   color: var(--white);
   margin-bottom: 1rem;
 }
 
 .hero-details {
   font-family: var(--font-sans);
-  font-size: .72rem;
-  letter-spacing: .22em;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ivory);
   line-height: 2;
@@ -338,10 +481,10 @@ h1, h2, h3, h4, h5 {
 .hero-countdown {
   margin-top: 1rem;
   font-family: var(--font-sans);
-  font-size: .65rem;
-  letter-spacing: .25em;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ivory);
 }
 
 .hero-divider {
@@ -352,7 +495,9 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Without an explicit width the ornament lines disappear in the flex hero */
-.hero .ornament { width: 220px; }
+.hero .ornament {
+  width: 220px;
+}
 
 /* Story timeline */
 .tl-item {
@@ -360,7 +505,9 @@ h1, h2, h3, h4, h5 {
   align-items: stretch;
   margin-bottom: 4rem;
 }
-.tl-item:last-child { margin-bottom: 0; }
+.tl-item:last-child {
+  margin-bottom: 0;
+}
 
 /* Each side (text or photo) takes equal space */
 .tl-side {
@@ -378,7 +525,7 @@ h1, h2, h3, h4, h5 {
 .tl-title {
   font-family: var(--font-script);
   font-size: 1.6rem;
-  color: var(--gold);
+  color: var(--ivory);
   display: block;
 }
 .tl-date {
@@ -408,7 +555,9 @@ h1, h2, h3, h4, h5 {
   flex: 1;
   background: var(--rule);
 }
-.tl-line--hidden { opacity: 0; }
+.tl-line--hidden {
+  opacity: 0;
+}
 .tl-diamond {
   width: 10px;
   height: 10px;
@@ -446,8 +595,10 @@ h1, h2, h3, h4, h5 {
   object-fit: cover;
   object-position: center;
   display: block;
-  border: 2px solid var(--gold);
-  box-shadow: inset 0 0 0 2px var(--black), 0 8px 32px rgba(0, 0, 0, 0.55);
+  border: 2px solid var(--ivory);
+  box-shadow:
+    inset 0 0 0 2px #0a0a0a,
+    0 8px 32px rgba(0, 0, 0, 0.55);
 }
 
 /* Focus helpers — add one of these classes to an <img> to control which
@@ -460,12 +611,24 @@ h1, h2, h3, h4, h5 {
    focus-right  — shows the right side
    focus-XX-YY  — custom: replace with any CSS value, e.g. style="object-position: 50% 20%"
 */
-.focus-top          { object-position: center top; }
-.focus-upper-third  { object-position: center 75%; }
-.focus-lower-third  { object-position: center 25%; }
-.focus-bottom       { object-position: center bottom; }
-.focus-left         { object-position: left center; }
-.focus-right        { object-position: right center; }
+.focus-top {
+  object-position: center top;
+}
+.focus-upper-third {
+  object-position: center 75%;
+}
+.focus-lower-third {
+  object-position: center 25%;
+}
+.focus-bottom {
+  object-position: center bottom;
+}
+.focus-left {
+  object-position: left center;
+}
+.focus-right {
+  object-position: right center;
+}
 
 /* zoom-out — shows the full image without any cropping.
    Black fills the empty space on portrait shots.
@@ -483,26 +646,96 @@ h1, h2, h3, h4, h5 {
     flex-direction: column;
     align-items: center;
   }
-  .tl-side { width: 100%; padding: 0; }
-  .tl-photo-side { margin-bottom: 1.5rem; }
-  .tl-text { text-align: center !important; margin-top: 1rem; }
-  .tl-spine { flex-direction: row; width: 100%; padding: 0.75rem 0; }
-  .tl-line { flex: 1; height: 1px; width: auto; }
+  .tl-side {
+    width: 100%;
+    padding: 0;
+  }
+  .tl-photo-side {
+    margin-bottom: 1.5rem;
+  }
+  .tl-text {
+    text-align: center !important;
+    margin-top: 1rem;
+  }
+  .tl-spine {
+    flex-direction: row;
+    width: 100%;
+    padding: 0.75rem 0;
+  }
+  .tl-line {
+    flex: 1;
+    height: 1px;
+    width: auto;
+  }
   /* Collapse the hidden line so the diamond sits at the true edge instead of the middle */
-  .tl-line--hidden { flex: 0; }
+  .tl-line--hidden {
+    flex: 0;
+  }
 }
 
 /* Inner page hero banner */
 .page-hero {
+  position: relative;
+  overflow: hidden;
   padding: 5rem 1.5rem 4rem;
   text-align: center;
   border-bottom: 1px solid var(--rule);
 }
 
+/* Faint blurred engagement photo behind the title — heavily blurred and
+   desaturated so it reads as mood/texture, not a distinct picture */
+.page-hero::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  background: url("Images/Home/9376aa78-a715-49a2-b2f5-78c35b50f25d~rt_auto-cr_0.0.2500.1875-rs_1700.jpg")
+    center / cover;
+  filter: blur(30px) saturate(0.7) brightness(0.6);
+  opacity: 0.22;
+  z-index: 0;
+}
+
+/* Thin botanical corner flourishes + soft vignette + warm center glow */
+.page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23e9dfcf' stroke-width='1' opacity='0.5'%3E%3Cpath d='M8 40 Q8 8 40 8'/%3E%3Cpath d='M18 30 Q22 20 32 18'/%3E%3Ccircle cx='40' cy='8' r='2' fill='%23e9dfcf' stroke='none'/%3E%3Ccircle cx='8' cy='40' r='2' fill='%23e9dfcf' stroke='none'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23e9dfcf' stroke-width='1' opacity='0.5' transform='rotate(180 45 45)'%3E%3Cpath d='M8 40 Q8 8 40 8'/%3E%3Cpath d='M18 30 Q22 20 32 18'/%3E%3Ccircle cx='40' cy='8' r='2' fill='%23e9dfcf' stroke='none'/%3E%3Ccircle cx='8' cy='40' r='2' fill='%23e9dfcf' stroke='none'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.03),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 35%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position:
+    top 18px left 18px,
+    bottom 18px right 18px,
+    center,
+    center;
+  background-size:
+    64px 64px,
+    64px 64px,
+    cover,
+    cover;
+  z-index: 1;
+}
+
+.page-hero > * {
+  position: relative;
+  z-index: 2;
+}
+
 .page-hero-title {
   font-size: clamp(2.8rem, 8vw, 6rem);
   font-weight: 300;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
 }
 
 /* Content sections */
@@ -511,12 +744,34 @@ h1, h2, h3, h4, h5 {
 }
 
 .content-section + .content-section {
+  position: relative;
   border-top: 1px solid var(--rule);
 }
+/* Small flourish marking the seam between stacked sections */
+.content-section + .content-section::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--ivory);
+  opacity: 0.55;
+}
 
-.narrow { max-width: 680px; margin: 0 auto; }
-.medium { max-width: 900px; margin: 0 auto; }
-.wide   { max-width: 1100px; margin: 0 auto; }
+.narrow {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.medium {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.wide {
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
 /* Bordered blocks */
 .block-bordered {
@@ -534,14 +789,16 @@ h1, h2, h3, h4, h5 {
 .btn-wedding {
   display: inline-block;
   font-family: var(--font-sans);
-  font-size: .65rem;
+  font-size: 0.65rem;
   font-weight: 500;
-  letter-spacing: .22em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--white);
   border: 1px solid var(--white);
-  padding: .9rem 2.8rem;
-  transition: background .25s, color .25s;
+  padding: 0.9rem 2.8rem;
+  transition:
+    background 0.25s,
+    color 0.25s;
 }
 .btn-wedding:hover {
   background: var(--white);
@@ -572,28 +829,31 @@ h1, h2, h3, h4, h5 {
   padding: 2.5rem 2rem;
   text-align: center;
   height: 100%;
-  transition: border-color .3s;
+  transition: border-color 0.3s;
 }
-.details-card:hover { border-color: var(--gold); }
+.details-card:hover {
+  border-color: var(--gold);
+}
 
 .details-card-icon {
   font-size: 1.4rem;
-  color: var(--gold);
+  color: var(--ivory);
   margin-bottom: 1rem;
 }
 
 .details-card h3 {
   font-size: 1.1rem;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-family: var(--font-sans);
   font-weight: 400;
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
-.details-card p, .details-card address {
+.details-card p,
+.details-card address {
   font-style: normal;
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--ivory);
   line-height: 1.8;
 }
@@ -613,17 +873,21 @@ h1, h2, h3, h4, h5 {
 }
 
 .photo-tile img {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  transition: transform .5s ease;
+  transition: transform 0.5s ease;
   filter: grayscale(20%);
 }
 
-.photo-tile:hover img { transform: scale(1.05); filter: grayscale(0%); }
-
+.photo-tile:hover img {
+  transform: scale(1.05);
+  filter: grayscale(0%);
+}
 
 .photo-placeholder {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -639,7 +903,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .party-card-img {
-  width: 180px; height: 180px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto 1.25rem;
@@ -652,7 +917,8 @@ h1, h2, h3, h4, h5 {
 }
 
 .party-card-img-placeholder {
-  width: 180px; height: 180px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   background: var(--mid);
   border: 1px solid var(--rule);
@@ -662,20 +928,20 @@ h1, h2, h3, h4, h5 {
   justify-content: center;
   font-family: var(--font-script);
   font-size: 2rem;
-  color: var(--gold);
+  color: var(--ivory);
 }
 
 .party-card h4 {
   font-size: 1.1rem;
-  letter-spacing: .04em;
-  margin-bottom: .25rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
 }
 
 .party-card p {
-  font-size: .7rem;
-  letter-spacing: .18em;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ivory);
 }
 
 /* Q&A accordion */
@@ -694,29 +960,32 @@ h1, h2, h3, h4, h5 {
   padding: 1.4rem 2.5rem 1.4rem 0;
   position: relative;
   cursor: pointer;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
 }
 
 .qa-question::after {
-  content: '+';
+  content: "+";
   position: absolute;
-  right: 0; top: 50%;
+  right: 0;
+  top: 50%;
   transform: translateY(-50%);
   font-family: var(--font-sans);
   font-size: 1.2rem;
   font-weight: 300;
-  color: var(--gold);
-  transition: transform .3s;
+  color: var(--ivory);
+  transition: transform 0.3s;
 }
 
 .qa-question.open::after {
-  content: '−';
+  content: "−";
 }
 
 .qa-answer {
   overflow: hidden;
   max-height: 0;
-  transition: max-height .35s ease, padding .35s;
+  transition:
+    max-height 0.35s ease,
+    padding 0.35s;
 }
 
 .qa-answer.open {
@@ -725,7 +994,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .qa-answer p {
-  font-size: .88rem;
+  font-size: 0.88rem;
   color: var(--ivory);
   line-height: 1.9;
 }
@@ -740,28 +1009,28 @@ h1, h2, h3, h4, h5 {
 
 .travel-card h3 {
   font-family: var(--font-sans);
-  font-size: .7rem;
-  letter-spacing: .22em;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: .75rem;
+  color: var(--ivory);
+  margin-bottom: 0.75rem;
 }
 
 .travel-card h4 {
   font-size: 1.25rem;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .travel-card p {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--ivory);
   line-height: 1.8;
 }
 
 .travel-card .btn-wedding {
   margin-top: 1.25rem;
-  font-size: .6rem;
-  padding: .7rem 2rem;
+  font-size: 0.6rem;
+  padding: 0.7rem 2rem;
 }
 
 /* Registry cards */
@@ -770,7 +1039,9 @@ h1, h2, h3, h4, h5 {
   padding: 3rem 2rem;
   text-align: center;
   height: 100%;
-  transition: border-color .3s, transform .3s;
+  transition:
+    border-color 0.3s,
+    transform 0.3s;
 }
 .registry-card:hover {
   border-color: var(--gold);
@@ -779,12 +1050,12 @@ h1, h2, h3, h4, h5 {
 
 .registry-card h3 {
   font-size: 1.4rem;
-  letter-spacing: .04em;
-  margin-bottom: .5rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
 }
 
 .registry-card p {
-  font-size: .83rem;
+  font-size: 0.83rem;
   color: var(--ivory);
   margin-bottom: 1.5rem;
 }
@@ -802,18 +1073,19 @@ h1, h2, h3, h4, h5 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .swatch-circle {
-  width: 60px; height: 60px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid var(--rule);
 }
 
 .swatch-label {
-  font-size: .62rem;
-  letter-spacing: .14em;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ivory);
 }
@@ -825,43 +1097,75 @@ h1, h2, h3, h4, h5 {
   padding: 3rem 1.5rem;
 }
 
+.footer-rings {
+  width: 28px;
+  height: 18px;
+  display: block;
+  margin: 0 auto 0.75rem;
+  fill: none;
+  stroke: var(--ivory);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
 .site-footer .monogram {
   font-family: var(--font-script);
   font-size: 2.5rem;
   color: var(--white);
   display: block;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .site-footer p {
-  font-size: .65rem;
-  letter-spacing: .2em;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ivory);
 }
 
 /* Mobile overrides */
 @media (max-width: 991.98px) {
-  .nav-desktop { display: none !important; }
-  .nav-toggler  { display: flex; }
+  .nav-desktop {
+    display: none !important;
+  }
+  .nav-toggler {
+    display: flex;
+  }
 }
 
 @media (min-width: 992px) {
-  .nav-toggler  { display: none !important; }
-  .nav-desktop  { display: flex !important; }
-  .nav-drawer   { display: none !important; }
+  .nav-toggler {
+    display: none !important;
+  }
+  .nav-desktop {
+    display: flex !important;
+  }
+  .nav-drawer {
+    display: none !important;
+  }
 }
 
 @media (max-width: 575.98px) {
-  .hero { min-height: 85svh; padding: 2.5rem 1.25rem 2rem; }
-  .hero-we-do { letter-spacing: .04em; }
-  .content-section { padding: 3.5rem 1.25rem; }
-  .block-bordered { padding: 2rem 1.25rem; }
-  .party-card-img, .party-card-img-placeholder { width: 140px; height: 140px; }
+  .hero {
+    min-height: 85svh;
+    padding: 2.5rem 1.25rem 2rem;
+  }
+  .hero-we-do {
+    letter-spacing: 0.04em;
+  }
+  .content-section {
+    padding: 3.5rem 1.25rem;
+  }
+  .block-bordered {
+    padding: 2rem 1.25rem;
+  }
+  .party-card-img,
+  .party-card-img-placeholder {
+    width: 140px;
+    height: 140px;
+  }
 
-  
   .photo-grid {
     grid-template-columns: 1fr 1fr;
   }
-
 }
