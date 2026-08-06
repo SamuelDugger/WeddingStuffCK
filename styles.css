@@ -2,18 +2,18 @@
 
 /* Color & font variables used throughout the site */
 :root {
-  --black: #141211;
+  --black: #3a1014;
   --white: #f6f2ed;
   --ivory: #e9dfcf;
-  --gold: #a24646;
-  --mid: #1a1a1a;
-  --rule: #8f3535;
+  --gold: #e8b4bd;
+  --mid: #3f151a;
+  --rule: #c98a95;
   /* Layered section backgrounds — cycle through these instead of repeating
      one flat color, so scrolling feels like distinct panels, not one sheet */
-  --layer-1: #121212;
-  --layer-2: #161515;
-  --layer-3: #121212;
-  --layer-4: #181615;
+  --layer-1: #3a1014;
+  --layer-2: #3f151a;
+  --layer-3: #3a1014;
+  --layer-4: #431720;
   /* Barely-there film grain, layered on top of any background-color below */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   /* Faint linen weave — a fine diagonal crosshatch, tiled small */
