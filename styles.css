@@ -11,9 +11,9 @@
   /* Layered section backgrounds — cycle through these instead of repeating
      one flat color, so scrolling feels like distinct panels, not one sheet */
   --layer-1: #3a1014;
-  --layer-2: #3f151a;
-  --layer-3: #3a1014;
-  --layer-4: #431720;
+  --layer-2: #6e353a;
+  --layer-3: #a16d72;
+  --layer-4: #d4babd;
   /* Barely-there film grain, layered on top of any background-color below */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   /* Faint linen weave — a fine diagonal crosshatch, tiled small */
@@ -413,7 +413,7 @@ h5 {
     radial-gradient(
       ellipse at center,
       transparent 35%,
-      rgba(0, 0, 0, 0.55) 100%
+      rgba(161, 109, 114, 0.55) 100%
     );
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-position:
@@ -711,7 +711,7 @@ h5 {
     radial-gradient(
       ellipse at center,
       transparent 35%,
-      rgba(0, 0, 0, 0.55) 100%
+      rgba(161, 109, 114, 0.55) 100%
     );
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-position:
