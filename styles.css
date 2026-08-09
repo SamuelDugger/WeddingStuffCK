@@ -390,10 +390,9 @@ h5 {
   content: "";
   position: absolute;
   inset: -15%;
-  background: url("Images/Home/9376aa78-a715-49a2-b2f5-78c35b50f25d~rt_auto-cr_0.0.2500.1875-rs_1700.jpg")
-    center / cover;
+  background: url("Images/Home/whitebackground.jpg") center / cover;
   filter: blur(30px) saturate(0.7) brightness(0.6);
-  opacity: 0.22;
+  opacity: 0.25;
   z-index: 0;
 }
 
@@ -688,10 +687,9 @@ h5 {
   content: "";
   position: absolute;
   inset: -15%;
-  background: url("Images/Home/9376aa78-a715-49a2-b2f5-78c35b50f25d~rt_auto-cr_0.0.2500.1875-rs_1700.jpg")
-    center / cover;
+  background: url("Images/Home/whitebackground.jpg") center / cover;
   filter: blur(30px) saturate(0.7) brightness(0.6);
-  opacity: 0.22;
+  opacity: 0.25;
   z-index: 0;
 }
 
