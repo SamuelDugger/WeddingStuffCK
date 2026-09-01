@@ -1,6 +1,8 @@
 // This is the main settings file for the wedding website.
 // You'll update this file to manage your guest list, events, and passwords.
 
+// Adding this to reupload
+
 // Password to log in to the admin page (admin.html)
 const ADMIN_PASSWORD = "C&K02272027";
 
