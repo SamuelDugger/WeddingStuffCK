@@ -60,29 +60,49 @@
       color: var(--gold);
       outline: none;
     }
+    .guest-result-sub {
+      display: block;
+      font-size: .7rem;
+      color: var(--ivory);
+      letter-spacing: .04em;
+      margin-top: .2rem;
+    }
 
-    /* Event card inside RSVP form */
-    .event-card {
+    /* One block per person in the household */
+    .member-block {
       border: 1px solid var(--rule);
       padding: 1.5rem;
-      margin-bottom: 1.25rem;
-      transition: border-color .2s;
+      margin-bottom: 1.5rem;
     }
-    .event-card.attending { border-color: var(--gold); }
-    .event-card.declining { border-color: rgba(245,243,239,.15); opacity: .65; }
+    .member-name {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 300;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .member-events { }
+
+    /* One event row inside a member's block */
+    .member-event-row {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .member-event-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .member-event-row:first-child { padding-top: 0; }
 
     .event-card-header {
       display: block;
     }
 
-    .event-card h3 {
+    .member-event-row h3 {
       font-family: var(--font-serif);
-      font-size: 1.2rem;
+      font-size: 1.05rem;
       font-weight: 300;
       margin: 0;
     }
 
-    .event-card .event-meta {
+    .member-event-row .event-meta {
       font-size: .72rem;
       color: var(--ivory);
       letter-spacing: .08em;
@@ -95,6 +115,7 @@
       display: flex;
       gap: .5rem;
       flex-shrink: 0;
+      margin-top: .85rem;
     }
     .attend-btn {
       background: none;
@@ -177,16 +198,16 @@
             <span class="section-eyebrow">Step 1 of 2</span>
             <h2 class="section-title mb-3">Find Your Invitation</h2>
             <p style="font-size:.85rem;color:var(--ivory);">
-              Enter your first or last name as it appears on your invitation.
+              Enter your name or your family's name as it appears on your invitation.
             </p>
           </div>
 
-          <label class="rsvp-label" for="nameSearch">Your Name</label>
+          <label class="rsvp-label" for="nameSearch">Your Name or Family Name</label>
           <input
             id="nameSearch"
             class="rsvp-input"
             type="text"
-            placeholder="e.g. Smith or John Smith"
+            placeholder="e.g. Smith or The Williams Family"
             autocomplete="off"
             autocorrect="off"
           />
@@ -206,16 +227,10 @@
           </div>
 
           <form id="rsvpForm" novalidate>
-            <!-- Plus-one field injected here if applicable -->
-            <div id="plusOneSection" style="display:none;margin-bottom:2rem;">
-              <label class="rsvp-label" for="plusOneName">Plus-One Name (optional)</label>
-              <input id="plusOneName" class="rsvp-input" type="text" placeholder="Guest's full name" />
-            </div>
+            <!-- One block per person in the household, injected by JS -->
+            <div id="memberCards"></div>
 
-            <!-- Event cards injected here by JS -->
-            <div id="eventCards"></div>
-
-            <!-- Dietary / notes -->
+            <!-- Dietary / notes, shared for the household -->
             <div style="margin-top:1.5rem;">
               <label class="rsvp-label" for="dietaryNotes">Dietary Restrictions or Notes</label>
               <textarea
@@ -227,7 +242,7 @@
               ></textarea>
             </div>
 
-            <p class="rsvp-error" id="formError">Please select Accepts or Declines for each event before submitting.</p>
+            <p class="rsvp-error" id="formError">Please select Accepts or Declines for each person and event before submitting.</p>
 
             <div class="text-center mt-4 d-flex gap-3 justify-content-center flex-wrap">
               <button type="button" class="attend-btn" id="backBtn">‹ Back</button>
@@ -270,6 +285,11 @@
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
       catch { return {}; }
     }
+    // Guards against stale cached data left over from an older version of this
+    // site (e.g. an id that used to belong to a different-shaped record)
+    function isValidRsvp(sub) {
+      return !!sub && Array.isArray(sub.members);
+    }
     function saveRsvps(data) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -277,13 +297,13 @@
     // Normalize a string for fuzzy matching
     function norm(s) { return s.toLowerCase().replace(/[^a-z\s]/g, '').trim(); }
 
-    // Search guest list by any word in the query
-    function searchGuests(query) {
+    // Search households by family name or by any member's name
+    function searchFamilies(query) {
       const words = norm(query).split(/\s+/).filter(Boolean);
       if (!words.length) return [];
-      return GUEST_LIST.filter(g => {
-        const n = norm(g.name);
-        return words.every(w => n.includes(w));
+      return GUEST_LIST.filter(f => {
+        const haystack = norm(f.familyName + ' ' + f.members.map(m => m.name).join(' '));
+        return words.every(w => haystack.includes(w));
       });
     }
 
@@ -294,9 +314,9 @@
     }
 
     // ---------- Step 1: search ----------
-    let selectedGuest = null;
+    let selectedFamily = null;
 
-    const nameInput  = $('nameSearch');
+    const nameInput   = $('nameSearch');
     const resultsList = $('guestResults');
     const searchError = $('searchError');
 
@@ -305,17 +325,21 @@
       searchError.classList.remove('visible');
       if (q.length < 2) { resultsList.style.display = 'none'; resultsList.innerHTML = ''; return; }
 
-      const matches = searchGuests(q);
+      const matches = searchFamilies(q);
       if (!matches.length) {
         resultsList.style.display = 'none';
         resultsList.innerHTML = '';
         return;
       }
 
-      resultsList.innerHTML = matches.map(g => {
-        const existing = loadRsvps()[g.id];
-        const badge = existing ? '<span class="rsvp-badge">RSVP on file</span>' : '';
-        return `<li tabindex="0" data-id="${g.id}">${g.name}${badge}</li>`;
+      resultsList.innerHTML = matches.map(f => {
+        const existing = loadRsvps()[f.id];
+        const badge = isValidRsvp(existing) ? '<span class="rsvp-badge">RSVP on file</span>' : '';
+        const names = f.members.length > 1 ? f.members.map(m => m.name.split(' ')[0]).join(', ') : '';
+        return `<li tabindex="0" data-id="${f.id}">
+          ${f.familyName}${badge}
+          ${names ? `<span class="guest-result-sub">${names}</span>` : ''}
+        </li>`;
       }).join('');
       resultsList.style.display = 'block';
     });
@@ -323,119 +347,139 @@
     resultsList.addEventListener('click', e => {
       const li = e.target.closest('li[data-id]');
       if (!li) return;
-      pickGuest(parseInt(li.dataset.id, 10));
+      pickFamily(parseInt(li.dataset.id, 10));
     });
     resultsList.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         const li = e.target.closest('li[data-id]');
-        if (li) pickGuest(parseInt(li.dataset.id, 10));
+        if (li) pickFamily(parseInt(li.dataset.id, 10));
       }
     });
 
     nameInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        const matches = searchGuests(nameInput.value.trim());
-        if (matches.length === 1) { pickGuest(matches[0].id); return; }
+        const matches = searchFamilies(nameInput.value.trim());
+        if (matches.length === 1) { pickFamily(matches[0].id); return; }
         if (!matches.length) searchError.classList.add('visible');
       }
     });
 
-    function pickGuest(id) {
-      selectedGuest = GUEST_LIST.find(g => g.id === id);
+    function pickFamily(id) {
+      selectedFamily = GUEST_LIST.find(f => f.id === id);
       resultsList.style.display = 'none';
-      if (!selectedGuest) return;
-      buildForm(selectedGuest);
+      if (!selectedFamily) return;
+      buildForm(selectedFamily);
       showStep('step-form');
     }
 
     // ---------- Step 2: form ----------
-    function buildForm(guest) {
-      $('formGuestName').textContent = guest.name;
-      $('formGuestNote').textContent =
-        `You're invited to ${guest.events.length} event${guest.events.length > 1 ? 's' : ''} below.`;
 
-      // Plus-one
-      const plusSec = $('plusOneSection');
-      if (guest.plusOne) { plusSec.style.display = 'block'; }
-      else { plusSec.style.display = 'none'; $('plusOneName').value = ''; }
+    // The list of people to show on the form: every named member, plus one
+    // extra unnamed slot at the end if the household is allowed a plus-one.
+    function getRoster(family) {
+      const roster = family.members.map((m, i) => ({
+        key: 'm' + i,
+        name: m.name,
+        events: m.events,
+        isPlusOne: false,
+      }));
+      if (family.plusOne) {
+        const allEvents = [...new Set(family.members.flatMap(m => m.events))];
+        roster.push({ key: 'plusone', name: '', events: allEvents, isPlusOne: true });
+      }
+      return roster;
+    }
 
-      // Load existing RSVP if any
-      const existing = loadRsvps()[guest.id];
+    function buildForm(family) {
+      $('formGuestName').textContent = family.familyName;
+      const peopleCount = family.members.length;
+      $('formGuestNote').textContent = peopleCount > 1
+        ? `Please RSVP for each of the ${peopleCount} people in your household below.`
+        : `You're invited to the event${family.members[0].events.length > 1 ? 's' : ''} below.`;
 
-      // Build event cards
-      const container = $('eventCards');
+      const existing = loadRsvps()[family.id];
+      const roster = getRoster(family);
+
+      const container = $('memberCards');
       container.innerHTML = '';
 
-      guest.events.forEach(evId => {
-        const ev = WEDDING_EVENTS[evId];
-        if (!ev) return;
+      roster.forEach(person => {
+        const savedMember = existing?.members?.find(m => m.rosterKey === person.key);
 
-        const saved = existing?.events?.[evId];
-        const savedAttending = saved?.attending; // true / false / undefined
+        const block = document.createElement('div');
+        block.className = 'member-block';
+        block.dataset.rosterKey = person.key;
+        block.dataset.plusOne = person.isPlusOne ? '1' : '0';
 
-        const card = document.createElement('div');
-        card.className = 'event-card' + (savedAttending === true ? ' attending' : savedAttending === false ? ' declining' : '');
-        card.dataset.eventId = evId;
-
-        const mealHtml = ev.mealChoices && ev.mealChoices.length
-          ? `<div style="margin-top:.75rem;">
-               <label class="rsvp-label" for="meal-${evId}">Meal Preference</label>
-               <select id="meal-${evId}" class="rsvp-input" name="meal-${evId}">
-                 <option value="">Select…</option>
-                 ${ev.mealChoices.map(c => `<option value="${c}"${saved?.meal===c?' selected':''}>${c}</option>`).join('')}
-               </select>
+        const nameHtml = person.isPlusOne
+          ? `<div style="margin-bottom:1.25rem;">
+               <label class="rsvp-label" for="name-${person.key}">Plus-One Name (optional)</label>
+               <input id="name-${person.key}" class="rsvp-input member-name-input" type="text"
+                 placeholder="Leave blank if you're not bringing anyone" value="${savedMember?.name ? savedMember.name.replace(/"/g,'&quot;') : ''}" />
              </div>`
-          : '';
+          : `<span class="member-name">${person.name}</span>`;
 
-        const existingBadge = saved
-          ? `<span class="rsvp-badge">${saved.attending ? 'Attending' : 'Declined'}</span>`
-          : '';
+        const eventsHtml = person.events.map(evId => {
+          const ev = WEDDING_EVENTS[evId];
+          if (!ev) return '';
+          const saved = savedMember?.events?.[evId];
+          const savedAttending = saved?.attending;
 
-        card.innerHTML = `
-          <div class="event-card-header">
-            <div>
-              <h3>${ev.label}${existingBadge}</h3>
-              <p class="event-meta">${ev.date} · ${ev.time}<br />${ev.location}</p>
-              ${ev.deadline ? `<p style="font-size:.65rem;color:var(--gold);margin-top:.35rem;letter-spacing:.1em;">RSVP by ${ev.deadline}</p>` : ''}
-            </div>
-            <div class="attend-toggle">
-              <button type="button" class="attend-btn yes${savedAttending===true?' active':''}" data-ev="${evId}" data-val="yes">Accepts</button>
-              <button type="button" class="attend-btn no${savedAttending===false?' active':''}"  data-ev="${evId}" data-val="no">Declines</button>
-            </div>
-          </div>
-          <div class="event-extra${savedAttending===true?' visible':''}" id="extra-${evId}">
-            ${mealHtml}
-          </div>`;
+          const mealHtml = ev.mealChoices && ev.mealChoices.length
+            ? `<div class="event-extra${savedAttending===true?' visible':''}" id="extra-${person.key}-${evId}">
+                 <label class="rsvp-label" for="meal-${person.key}-${evId}">Meal Preference</label>
+                 <select id="meal-${person.key}-${evId}" class="rsvp-input" name="meal-${person.key}-${evId}">
+                   <option value="">Select…</option>
+                   ${ev.mealChoices.map(c => `<option value="${c}"${saved?.meal===c?' selected':''}>${c}</option>`).join('')}
+                 </select>
+               </div>`
+            : '';
 
-        container.appendChild(card);
+          return `
+            <div class="member-event-row" data-event-id="${evId}">
+              <div class="event-card-header">
+                <div>
+                  <h3>${ev.label}</h3>
+                  <p class="event-meta">${ev.date} · ${ev.time}<br />${ev.location}</p>
+                  ${ev.deadline ? `<p style="font-size:.65rem;color:var(--gold);margin-top:.35rem;letter-spacing:.1em;">RSVP by ${ev.deadline}</p>` : ''}
+                </div>
+                <div class="attend-toggle">
+                  <button type="button" class="attend-btn yes${savedAttending===true?' active':''}" data-key="${person.key}" data-ev="${evId}" data-val="yes">Accepts</button>
+                  <button type="button" class="attend-btn no${savedAttending===false?' active':''}"  data-key="${person.key}" data-ev="${evId}" data-val="no">Declines</button>
+                </div>
+              </div>
+              ${mealHtml}
+            </div>`;
+        }).join('');
+
+        block.innerHTML = nameHtml + `<div class="member-events">${eventsHtml}</div>`;
+        container.appendChild(block);
       });
 
-      // Load saved dietary notes
-      if (existing?.dietary) $('dietaryNotes').value = existing.dietary;
-      else $('dietaryNotes').value = '';
-
-      // Load saved plusOne
-      if (existing?.plusOneName) $('plusOneName').value = existing.plusOneName;
+      // Dietary notes are shared across the whole household
+      $('dietaryNotes').value = existing?.dietary || '';
 
       attachToggleListeners();
     }
 
     function attachToggleListeners() {
-      document.querySelectorAll('.attend-btn').forEach(btn => {
+      document.querySelectorAll('.attend-btn[data-key]').forEach(btn => {
         btn.addEventListener('click', () => {
+          const key  = btn.dataset.key;
           const evId = btn.dataset.ev;
           const val  = btn.dataset.val; // 'yes' or 'no'
-          const card = btn.closest('.event-card');
-          const extra = $('extra-' + evId);
+          const row  = btn.closest('.member-event-row');
+          const extra = $(`extra-${key}-${evId}`);
 
-          card.querySelector('.attend-btn.yes').classList.remove('active');
-          card.querySelector('.attend-btn.no').classList.remove('active');
+          row.querySelector('.attend-btn.yes').classList.remove('active');
+          row.querySelector('.attend-btn.no').classList.remove('active');
           btn.classList.add('active');
 
-          card.classList.remove('attending', 'declining');
-          if (val === 'yes') { card.classList.add('attending'); extra.classList.add('visible'); }
-          else               { card.classList.add('declining'); extra.classList.remove('visible'); }
+          if (extra) {
+            if (val === 'yes') extra.classList.add('visible');
+            else extra.classList.remove('visible');
+          }
 
           $('formError').classList.remove('visible');
         });
@@ -447,42 +491,51 @@
     // ---------- Submit ----------
     $('rsvpForm').addEventListener('submit', async e => {
       e.preventDefault();
-      if (!selectedGuest) return;
+      if (!selectedFamily) return;
 
-      // Validate: every event must have a choice
-      const cards = document.querySelectorAll('.event-card');
+      const blocks = Array.from(document.querySelectorAll('.member-block'));
       let valid = true;
-      cards.forEach(card => {
-        const yesActive = card.querySelector('.attend-btn.yes.active');
-        const noActive  = card.querySelector('.attend-btn.no.active');
-        if (!yesActive && !noActive) valid = false;
+      const membersData = [];
+
+      blocks.forEach(block => {
+        const key = block.dataset.rosterKey;
+        const isPlusOne = block.dataset.plusOne === '1';
+        const nameInputEl = block.querySelector('.member-name-input');
+        const name = isPlusOne
+          ? (nameInputEl ? nameInputEl.value.trim() : '')
+          : block.querySelector('.member-name').textContent;
+
+        // An empty, unused plus-one slot is skipped entirely — no name, no answers required
+        if (isPlusOne && !name) return;
+
+        const rows = Array.from(block.querySelectorAll('.member-event-row'));
+        const eventsData = {};
+        rows.forEach(row => {
+          const evId = row.dataset.eventId;
+          const yesActive = row.querySelector('.attend-btn.yes.active');
+          const noActive  = row.querySelector('.attend-btn.no.active');
+          if (!yesActive && !noActive) { valid = false; return; }
+          const attending = !!yesActive;
+          const mealSel = row.querySelector(`select[name="meal-${key}-${evId}"]`);
+          eventsData[evId] = { attending, meal: mealSel ? mealSel.value : '' };
+        });
+
+        membersData.push({ rosterKey: key, name, isPlusOne, events: eventsData });
       });
+
       if (!valid) { $('formError').classList.add('visible'); return; }
 
-      // Build submission object
-      const eventsData = {};
-      cards.forEach(card => {
-        const evId     = card.dataset.eventId;
-        const attending = card.querySelector('.attend-btn.yes.active') !== null;
-        const mealSel  = card.querySelector(`select[name="meal-${evId}"]`);
-        eventsData[evId] = {
-          attending,
-          meal: mealSel ? mealSel.value : '',
-        };
-      });
-
       const submission = {
-        guestId:      selectedGuest.id,
-        name:         selectedGuest.name,
-        plusOneName:  $('plusOneName').value.trim(),
+        familyId:     selectedFamily.id,
+        familyName:   selectedFamily.familyName,
         dietary:      $('dietaryNotes').value.trim(),
         submittedAt:  new Date().toISOString(),
-        events:       eventsData,
+        members:      membersData,
       };
 
       // Always save to localStorage as a local cache (powers the "RSVP on file" badge)
       const all = loadRsvps();
-      all[selectedGuest.id] = submission;
+      all[selectedFamily.id] = submission;
       saveRsvps(all);
 
       // If a backend URL is configured, POST to Google Sheets
@@ -515,52 +568,52 @@
 
     // ---------- Step 3: Confirmation ----------
     function showConfirmation(sub) {
-      $('confirmTitle').textContent = `Thank you, ${sub.name.split(' ')[0]}!`;
+      $('confirmTitle').textContent = `Thank you, ${sub.familyName.split(' ')[0]}!`;
 
-      const attending = Object.entries(sub.events).filter(([,v]) => v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
-      const declining = Object.entries(sub.events).filter(([,v]) => !v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
-
-      $('confirmBody').textContent = attending.length
+      const anyAttending = sub.members.some(m => Object.values(m.events).some(v => v.attending));
+      $('confirmBody').textContent = anyAttending
         ? `We can't wait to celebrate with you! Your RSVP has been saved.`
         : `We're sorry you can't make it. Your response has been recorded.`;
 
       let summaryHtml = '';
+      sub.members.forEach(m => {
+        const attending = Object.entries(m.events).filter(([,v]) => v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
+        const declining = Object.entries(m.events).filter(([,v]) => !v.attending).map(([k]) => WEDDING_EVENTS[k]?.label).filter(Boolean);
+        if (!attending.length && !declining.length) return;
 
-      if (attending.length) {
         summaryHtml += `<div class="block-bordered mb-3">
-          <p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;">Attending</p>
-          <ul style="list-style:none;padding:0;">
-            ${attending.map(n => `<li style="font-size:.85rem;color:var(--ivory);padding:.2rem 0;">✦ &nbsp;${n}</li>`).join('')}
-          </ul>
-        </div>`;
-      }
-      if (declining.length) {
-        summaryHtml += `<div class="block-bordered" style="border-color:rgba(245,243,239,.15);opacity:.7;">
-          <p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ivory);margin-bottom:.75rem;">Unable to Attend</p>
-          <ul style="list-style:none;padding:0;">
-            ${declining.map(n => `<li style="font-size:.85rem;color:var(--ivory);padding:.2rem 0;">${n}</li>`).join('')}
-          </ul>
-        </div>`;
-      }
+          <p style="font-size:.9rem;color:var(--white);margin-bottom:.75rem;">${m.name}</p>`;
+        if (attending.length) {
+          summaryHtml += `<ul style="list-style:none;padding:0;${declining.length ? 'margin-bottom:.5rem;' : 'margin:0;'}">
+            ${attending.map(n => `<li style="font-size:.8rem;color:var(--ivory);padding:.15rem 0;">✦ &nbsp;${n}</li>`).join('')}
+          </ul>`;
+        }
+        if (declining.length) {
+          summaryHtml += `<ul style="list-style:none;padding:0;margin:0;opacity:.6;">
+            ${declining.map(n => `<li style="font-size:.8rem;color:var(--ivory);padding:.15rem 0;">${n} — can't attend</li>`).join('')}
+          </ul>`;
+        }
+        summaryHtml += `</div>`;
+      });
 
       $('confirmSummary').innerHTML = summaryHtml;
       showStep('step-confirm');
     }
 
     $('editRsvpBtn').addEventListener('click', () => {
-      if (selectedGuest) { buildForm(selectedGuest); showStep('step-form'); }
+      if (selectedFamily) { buildForm(selectedFamily); showStep('step-form'); }
       else showStep('step-search');
     });
 
-    // ---------- Auto-restore if guest already RSVP'd ----------
-    // If URL has ?guest=id, jump straight to confirmation for that guest
+    // ---------- Auto-restore if this household already RSVP'd ----------
+    // If URL has ?family=id, jump straight to confirmation for that household
     const params = new URLSearchParams(location.search);
-    const preId  = parseInt(params.get('guest'), 10);
+    const preId  = parseInt(params.get('family'), 10);
     if (preId) {
       const rsvps = loadRsvps();
-      if (rsvps[preId]) {
-        selectedGuest = GUEST_LIST.find(g => g.id === preId);
-        if (selectedGuest) showConfirmation(rsvps[preId]);
+      if (isValidRsvp(rsvps[preId])) {
+        selectedFamily = GUEST_LIST.find(f => f.id === preId);
+        if (selectedFamily) showConfirmation(rsvps[preId]);
       }
     }
   })();

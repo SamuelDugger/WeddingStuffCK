@@ -106,6 +106,8 @@
     }
     .admin-table tr:last-child td { border-bottom: none; }
     .admin-table tr:hover td { background: var(--mid); }
+    .admin-table tr.family-start td { border-top: 1px solid var(--rule); }
+    .admin-table tr.family-start:first-child td { border-top: none; }
 
     .badge-yes {
       display: inline-block;
@@ -210,6 +212,7 @@
       padding: .25rem .65rem;
       cursor: pointer;
       transition: background .2s, color .2s;
+      white-space: nowrap;
     }
     .btn-delete:hover { background: rgba(224,112,112,.1); color: #e07070; }
 
@@ -286,6 +289,8 @@
       catch { return {}; }
     }
     function saveRsvps(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+    function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
 
     // ── Login ──
     const loginGate  = document.getElementById('loginGate');
@@ -370,16 +375,59 @@
       document.querySelector('.admin-wrap').prepend(b);
     }
 
+    // ---------- Flatten every household into one row per person ----------
+    // Each family in GUEST_LIST becomes one entry per named member, plus one
+    // extra entry if the guest actually named a plus-one when they RSVP'd
+    // (an unused plus-one slot never shows up here — we don't know their name).
+    function getAllPeople(rsvps) {
+      const people = [];
+      GUEST_LIST.forEach(family => {
+        const sub = rsvps[family.id];
+        family.members.forEach((m, i) => {
+          const rosterKey = 'm' + i;
+          const savedMember = sub?.members?.find(sm => sm.rosterKey === rosterKey);
+          people.push({
+            familyId: family.id,
+            familyName: family.familyName,
+            rosterKey: rosterKey,
+            name: m.name,
+            events: m.events,
+            isPlusOne: false,
+            isFamilyStart: i === 0,
+            sub: sub,
+            savedMember: savedMember,
+          });
+        });
+        const plusOneSaved = sub?.members?.find(sm => sm.isPlusOne);
+        if (plusOneSaved) {
+          people.push({
+            familyId: family.id,
+            familyName: family.familyName,
+            rosterKey: plusOneSaved.rosterKey,
+            name: plusOneSaved.name,
+            events: Object.keys(plusOneSaved.events),
+            isPlusOne: true,
+            isFamilyStart: family.members.length === 0,
+            sub: sub,
+            savedMember: plusOneSaved,
+          });
+        }
+      });
+      return people;
+    }
+
     function renderStats(rsvps) {
-      const total     = GUEST_LIST.length;
-      const responded = Object.keys(rsvps).length;
+      const people    = getAllPeople(rsvps);
+      const total     = people.length;
+      const responded = people.filter(p => p.savedMember).length;
       const pending   = total - responded;
 
       // Per-event attending counts
       const eventStats = {};
       Object.values(WEDDING_EVENTS).forEach(ev => { eventStats[ev.id] = 0; });
-      Object.values(rsvps).forEach(sub => {
-        Object.entries(sub.events || {}).forEach(([evId, data]) => {
+      people.forEach(p => {
+        if (!p.savedMember) return;
+        Object.entries(p.savedMember.events).forEach(([evId, data]) => {
           if (data.attending) eventStats[evId] = (eventStats[evId] || 0) + 1;
         });
       });
@@ -430,27 +478,33 @@
 
     // ---------- Tab: All Guests ----------
     function renderAllGuests(rsvps) {
-      const evIds = Object.keys(WEDDING_EVENTS);
-      const rows = GUEST_LIST.map(guest => {
-        const sub = rsvps[guest.id];
+      const evIds  = Object.keys(WEDDING_EVENTS);
+      const people = getAllPeople(rsvps);
+
+      const rows = people.map(p => {
         const evCells = evIds.map(evId => {
-          if (!guest.events.includes(evId)) return `<td style="color:rgba(245,243,239,.2);text-align:center;">—</td>`;
-          if (!sub) return `<td><span class="badge-pending">Pending</span></td>`;
-          const ev = sub.events?.[evId];
-          if (!ev) return `<td><span class="badge-pending">Pending</span></td>`;
-          return `<td>${ev.attending ? '<span class="badge-yes">Attending</span>' : '<span class="badge-no">Declined</span>'}</td>`;
+          if (!p.events.includes(evId)) return `<td style="color:rgba(245,243,239,.2);text-align:center;">—</td>`;
+          const evData = p.savedMember?.events?.[evId];
+          if (!evData) return `<td><span class="badge-pending">Pending</span></td>`;
+          return `<td>${evData.attending ? '<span class="badge-yes">Attending</span>' : '<span class="badge-no">Declined</span>'}</td>`;
         }).join('');
 
-        const submittedAt = sub?.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-        const plusOne = sub?.plusOneName ? `<br/><span style="font-size:.72rem;color:var(--gold);">+${sub.plusOneName}</span>` : '';
-        const dietary = sub?.dietary ? `<span title="${sub.dietary}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋 Notes</span>` : '';
+        const submittedAt = p.sub?.submittedAt ? new Date(p.sub.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+        const dietary  = p.sub?.dietary ? `<span title="${escapeAttr(p.sub.dietary)}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋 Notes</span>` : '';
+        const plusOneTag = p.isPlusOne ? ` <span style="font-size:.68rem;color:var(--gold);">(+1)</span>` : '';
+        // Only the first row of each household shows the remove action — it
+        // removes everyone in that household at once (RSVPs are saved per household).
+        const removeBtn = p.isFamilyStart
+          ? `<button class="btn-delete" data-family-id="${p.familyId}" ${!p.sub?'disabled style="opacity:.3"':''}>Remove</button>`
+          : '';
 
-        return `<tr>
-          <td><strong>${guest.name}</strong>${plusOne}</td>
+        return `<tr${p.isFamilyStart ? ' class="family-start"' : ''}>
+          <td style="font-size:.72rem;color:var(--ivory);">${p.familyName}</td>
+          <td><strong>${p.name}</strong>${plusOneTag}</td>
           ${evCells}
           <td style="font-size:.72rem;color:var(--ivory);">${submittedAt}</td>
           <td>${dietary}</td>
-          <td><button class="btn-delete" data-guest-id="${guest.id}" ${!sub?'disabled style="opacity:.3"':''}>Remove</button></td>
+          <td>${removeBtn}</td>
         </tr>`;
       }).join('');
 
@@ -460,20 +514,21 @@
         <div class="table-scroll">
           <table class="admin-table">
             <thead><tr>
-              <th>Guest</th>${evHeaders}<th>Submitted</th><th>Notes</th><th></th>
+              <th>Family</th><th>Guest</th>${evHeaders}<th>Submitted</th><th>Notes</th><th></th>
             </tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>`;
 
       document.getElementById('panel-all').querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', () => deleteRsvp(parseInt(btn.dataset.guestId, 10)));
+        btn.addEventListener('click', () => deleteRsvp(parseInt(btn.dataset.familyId, 10)));
       });
     }
 
     // ---------- Tab: Not Responded ----------
     function renderPending(rsvps) {
-      const pending = GUEST_LIST.filter(g => !rsvps[g.id]);
+      const people  = getAllPeople(rsvps);
+      const pending = people.filter(p => !p.savedMember);
       if (!pending.length) {
         document.getElementById('panel-pending').innerHTML = `
           <p style="color:var(--gold);font-size:.85rem;text-align:center;padding:3rem 0;">
@@ -481,17 +536,18 @@
           </p>`;
         return;
       }
-      const rows = pending.map(g => `
+      const rows = pending.map(p => `
         <tr>
-          <td><strong>${g.name}</strong></td>
-          <td style="font-size:.72rem;color:var(--ivory);">${g.events.map(id => WEDDING_EVENTS[id]?.label || id).join(', ')}</td>
+          <td style="font-size:.72rem;color:var(--ivory);">${p.familyName}</td>
+          <td><strong>${p.name}</strong></td>
+          <td style="font-size:.72rem;color:var(--ivory);">${p.events.map(id => WEDDING_EVENTS[id]?.label || id).join(', ')}</td>
         </tr>`).join('');
 
       document.getElementById('panel-pending').innerHTML = `
         <p style="font-size:.75rem;color:var(--ivory);margin-bottom:1.25rem;">${pending.length} guest${pending.length!==1?'s':''} haven't responded yet.</p>
         <div class="table-scroll">
           <table class="admin-table">
-            <thead><tr><th>Guest</th><th>Invited To</th></tr></thead>
+            <thead><tr><th>Family</th><th>Guest</th><th>Invited To</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>`;
@@ -499,26 +555,26 @@
 
     // ---------- Tab: Per-event ----------
     function renderEventPanel(evId, rsvps) {
-      const ev = WEDDING_EVENTS[evId];
-      const invited = GUEST_LIST.filter(g => g.events.includes(evId));
+      const ev      = WEDDING_EVENTS[evId];
+      const invited = getAllPeople(rsvps).filter(p => p.events.includes(evId));
       const attending = [];
       const declined  = [];
       const pending   = [];
 
-      invited.forEach(g => {
-        const sub = rsvps[g.id];
-        const evData = sub?.events?.[evId];
-        if (!sub || !evData)    pending.push(g);
-        else if (evData.attending) attending.push({ guest: g, sub });
-        else                       declined.push({ guest: g, sub });
+      invited.forEach(p => {
+        const evData = p.savedMember?.events?.[evId];
+        if (!evData)            pending.push(p);
+        else if (evData.attending) attending.push(p);
+        else                        declined.push(p);
       });
 
-      const makeRows = (list, showMeal) => list.map(({ guest, sub }) => {
-        const meal = sub.events?.[evId]?.meal || '—';
-        const plusOne = sub.plusOneName ? ` <span style="font-size:.72rem;color:var(--gold);">(+${sub.plusOneName})</span>` : '';
-        const dietary = sub.dietary ? `<span title="${sub.dietary}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋</span>` : '';
+      const makeRows = (list, showMeal) => list.map(p => {
+        const meal = p.savedMember.events[evId]?.meal || '—';
+        const plusOneTag = p.isPlusOne ? ` <span style="font-size:.72rem;color:var(--gold);">(+1)</span>` : '';
+        const dietary = p.sub?.dietary ? `<span title="${escapeAttr(p.sub.dietary)}" style="font-size:.7rem;color:var(--gold);cursor:help;">📋</span>` : '';
         return `<tr>
-          <td><strong>${guest.name}</strong>${plusOne}</td>
+          <td style="font-size:.72rem;color:var(--ivory);">${p.familyName}</td>
+          <td><strong>${p.name}</strong>${plusOneTag}</td>
           ${showMeal ? `<td style="font-size:.75rem;">${meal}</td>` : ''}
           <td>${dietary}</td>
         </tr>`;
@@ -531,8 +587,8 @@
       let mealSummary = '';
       if (hasMeals && attending.length) {
         const counts = {};
-        attending.forEach(({ sub }) => {
-          const m = sub.events?.[evId]?.meal || 'No preference';
+        attending.forEach(p => {
+          const m = p.savedMember.events[evId]?.meal || 'No preference';
           counts[m] = (counts[m] || 0) + 1;
         });
         mealSummary = `
@@ -561,7 +617,7 @@
           <span class="admin-section-title">Attending (${attending.length})</span>
           <div class="table-scroll mb-4">
             <table class="admin-table">
-              <thead><tr><th>Guest</th>${mealHeader}<th></th></tr></thead>
+              <thead><tr><th>Family</th><th>Guest</th>${mealHeader}<th></th></tr></thead>
               <tbody>${makeRows(attending, hasMeals)}</tbody>
             </table>
           </div>` : ''}
@@ -570,7 +626,7 @@
           <span class="admin-section-title">Declined (${declined.length})</span>
           <div class="table-scroll mb-4">
             <table class="admin-table" style="opacity:.6;">
-              <thead><tr><th>Guest</th>${mealHeader}<th></th></tr></thead>
+              <thead><tr><th>Family</th><th>Guest</th>${mealHeader}<th></th></tr></thead>
               <tbody>${makeRows(declined, hasMeals)}</tbody>
             </table>
           </div>` : ''}
@@ -579,18 +635,18 @@
           <span class="admin-section-title">No Response Yet (${pending.length})</span>
           <div class="table-scroll">
             <table class="admin-table" style="opacity:.5;">
-              <thead><tr><th>Guest</th></tr></thead>
-              <tbody>${pending.map(g=>`<tr><td>${g.name}</td></tr>`).join('')}</tbody>
+              <thead><tr><th>Family</th><th>Guest</th></tr></thead>
+              <tbody>${pending.map(p=>`<tr><td style="font-size:.72rem;">${p.familyName}</td><td>${p.name}</td></tr>`).join('')}</tbody>
             </table>
           </div>` : ''}`;
     }
 
-    // ---------- Delete single RSVP ----------
-    function deleteRsvp(guestId) {
-      const guest = GUEST_LIST.find(g => g.id === guestId);
-      if (!confirm(`Remove RSVP for ${guest?.name}? This cannot be undone.`)) return;
-      const all = loadRsvps();
-      delete all[guestId];
+    // ---------- Delete a household's RSVP ----------
+    function deleteRsvp(familyId) {
+      const family = GUEST_LIST.find(f => f.id === familyId);
+      if (!confirm(`Remove the RSVP for ${family?.familyName}? This removes everyone in this household and cannot be undone.`)) return;
+      const all = loadLocalRsvps();
+      delete all[familyId];
       saveRsvps(all);
       renderDashboard();
     }
@@ -616,29 +672,30 @@
     });
 
     // ---------- CSV Export ----------
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-      const rsvps  = loadRsvps();
-      const evIds  = Object.keys(WEDDING_EVENTS);
-      const header = ['Guest Name', 'Plus One', ...evIds.map(id => WEDDING_EVENTS[id].label), ...evIds.map(id => `${WEDDING_EVENTS[id].label} - Meal`), 'Dietary Notes', 'Submitted At'];
+    document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+      const rsvps   = await fetchAllRsvps();
+      const evIds   = Object.keys(WEDDING_EVENTS);
+      const people  = getAllPeople(rsvps);
+      const header  = ['Family', 'Guest', 'Plus-One', ...evIds.map(id => WEDDING_EVENTS[id].label), ...evIds.map(id => `${WEDDING_EVENTS[id].label} - Meal`), 'Dietary Notes', 'Submitted At'];
 
-      const rows = GUEST_LIST.map(guest => {
-        const sub = rsvps[guest.id];
+      const rows = people.map(p => {
         const evAttend = evIds.map(id => {
-          if (!guest.events.includes(id)) return 'N/A';
-          if (!sub?.events?.[id]) return 'Pending';
-          return sub.events[id].attending ? 'Yes' : 'No';
+          if (!p.events.includes(id)) return 'N/A';
+          if (!p.savedMember?.events?.[id]) return 'Pending';
+          return p.savedMember.events[id].attending ? 'Yes' : 'No';
         });
         const evMeals = evIds.map(id => {
-          if (!guest.events.includes(id)) return 'N/A';
-          return sub?.events?.[id]?.meal || '';
+          if (!p.events.includes(id)) return 'N/A';
+          return p.savedMember?.events?.[id]?.meal || '';
         });
         return [
-          `"${guest.name}"`,
-          `"${sub?.plusOneName || ''}"`,
+          `"${p.familyName}"`,
+          `"${p.name}"`,
+          `"${p.isPlusOne ? 'Yes' : 'No'}"`,
           ...evAttend.map(v => `"${v}"`),
           ...evMeals.map(v => `"${v}"`),
-          `"${sub?.dietary || ''}"`,
-          `"${sub?.submittedAt ? new Date(sub.submittedAt).toLocaleString() : ''}"`,
+          `"${p.sub?.dietary || ''}"`,
+          `"${p.sub?.submittedAt ? new Date(p.sub.submittedAt).toLocaleString() : ''}"`,
         ].join(',');
       });
 
