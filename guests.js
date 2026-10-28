@@ -396,10 +396,12 @@ const GUEST_LIST = [
   },
   {
     id: 44,
-    familyName: "Mike & Tara Dawson",
+    familyName: "Mike, Tara, Sean & Annie Dawson",
     members: [
       { name: "Mike Dawson", events: ["ceremony", "reception"] },
       { name: "Tara Dawson", events: ["ceremony", "reception"] },
+      { name: "Sean Dawson", events: ["ceremony", "reception"] },
+      { name: "Annie Dawson", events: ["ceremony", "reception"] },
     ],
   },
   {
@@ -645,5 +647,134 @@ const GUEST_LIST = [
     id: 83,
     familyName: "Mark Mannon",
     members: [{ name: "Mark Mannon", events: ["ceremony", "reception"] }],
+  },
+
+  // ---- Added later (ceremony + reception only) ----
+  // New households are always added at the END with the next unused id, so
+  // existing guests' saved RSVPs (matched by id) are never disturbed.
+  {
+    id: 84,
+    familyName: "Josh & Kasey Wilson",
+    members: [
+      { name: "Josh Wilson", events: ["ceremony", "reception"] },
+      { name: "Kasey Wilson", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 85,
+    familyName: "Jesse & Josh Ihde",
+    members: [
+      { name: "Jesse Ihde", events: ["ceremony", "reception"] },
+      { name: "Josh Ihde", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 86,
+    familyName: "Kate Aman",
+    members: [{ name: "Kate Aman", events: ["ceremony", "reception"] }],
+    plusOne: true,
+  },
+  {
+    id: 87,
+    familyName: "Shelbie & Silas Crow",
+    members: [
+      { name: "Shelbie Crow", events: ["ceremony", "reception"] },
+      { name: "Silas Crow", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 88,
+    familyName: "Zach & Nikki Marley",
+    members: [
+      { name: "Zach Marley", events: ["ceremony", "reception"] },
+      { name: "Nikki Marley", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 89,
+    familyName: "Brittany & George Tipton",
+    members: [
+      { name: "Brittany Tipton", events: ["ceremony", "reception"] },
+      { name: "George Tipton", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 90,
+    familyName: "Karin Mitchell",
+    members: [{ name: "Karin Mitchell", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 91,
+    familyName: "Ashley & Jonathan James",
+    members: [
+      { name: "Ashley James", events: ["ceremony", "reception"] },
+      { name: "Jonathan James", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 92,
+    familyName: "Claudia & Darrick Cohorn",
+    members: [
+      { name: "Claudia Cohorn", events: ["ceremony", "reception"] },
+      { name: "Darrick Cohorn", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 93,
+    familyName: "Danielle & Matthew Wilson",
+    members: [
+      { name: "Danielle Wilson", events: ["ceremony", "reception"] },
+      { name: "Matthew Wilson", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 94,
+    familyName: "Emily Essl",
+    members: [{ name: "Emily Essl", events: ["ceremony", "reception"] }],
+    plusOne: true,
+  },
+  {
+    id: 95,
+    familyName: "Julie Piccirillo",
+    members: [{ name: "Julie Piccirillo", events: ["ceremony", "reception"] }],
+    plusOne: true,
+  },
+  {
+    id: 96,
+    familyName: "Kerri Briggs",
+    members: [{ name: "Kerri Briggs", events: ["ceremony", "reception"] }],
+    plusOne: true,
+  },
+  {
+    id: 97,
+    familyName: "Lee Gaudreau",
+    members: [{ name: "Lee Gaudreau", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 98,
+    familyName: "Marsha Clark Beard & Jimmy Beard",
+    members: [
+      { name: "Marsha Clark Beard", events: ["ceremony", "reception"] },
+      { name: "Jimmy Beard", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 99,
+    familyName: "Mysti & Chad Hively",
+    members: [
+      { name: "Mysti Hively", events: ["ceremony", "reception"] },
+      { name: "Chad Hively", events: ["ceremony", "reception"] },
+    ],
+  },
+  {
+    id: 100,
+    familyName: "Taylor Williams",
+    members: [{ name: "Taylor Williams", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 101,
+    familyName: "Taryn McDonald",
+    members: [{ name: "Taryn McDonald", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
 ];
