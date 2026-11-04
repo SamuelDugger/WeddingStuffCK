@@ -777,4 +777,22 @@ const GUEST_LIST = [
     members: [{ name: "Taryn McDonald", events: ["ceremony", "reception"] }],
     plusOne: true,
   },
+  {
+    id: 102,
+    familyName: "Amon Watson",
+    members: [{ name: "Amon Watson", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 103,
+    familyName: "Lynn Watson",
+    members: [{ name: "Lynn Watson", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 104,
+    familyName: "Evette & Mark Pilarca",
+    members: [
+      { name: "Evette Pilarca", events: ["ceremony", "reception"] },
+      { name: "Mark Pilarca", events: ["ceremony", "reception"] },
+    ],
+  },
 ];
