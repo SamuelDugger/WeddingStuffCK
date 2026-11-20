@@ -617,31 +617,37 @@ const GUEST_LIST = [
     id: 77,
     familyName: "Scott King",
     members: [{ name: "Scott King", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 78,
     familyName: "Tina Prentice",
     members: [{ name: "Tina Prentice", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 79,
     familyName: "John Feurborn",
     members: [{ name: "John Feurborn", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 80,
     familyName: "Jeff Reirdon",
     members: [{ name: "Jeff Reirdon", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 81,
     familyName: "AJ Johnson",
     members: [{ name: "AJ Johnson", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 82,
     familyName: "Johnny Bates",
     members: [{ name: "Johnny Bates", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
   {
     id: 83,
@@ -794,5 +800,21 @@ const GUEST_LIST = [
       { name: "Evette Pilarca", events: ["ceremony", "reception"] },
       { name: "Mark Pilarca", events: ["ceremony", "reception"] },
     ],
+  },
+  {
+    id: 105,
+    familyName: "Jesse Lopez",
+    members: [{ name: "Jesse Lopez", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 106,
+    familyName: "Olivia Crossland",
+    members: [{ name: "Olivia Crossland", events: ["ceremony", "reception"] }],
+  },
+  {
+    id: 107,
+    familyName: "Ernie Melton",
+    members: [{ name: "Ernie Melton", events: ["ceremony", "reception"] }],
+    plusOne: true,
   },
 ];
